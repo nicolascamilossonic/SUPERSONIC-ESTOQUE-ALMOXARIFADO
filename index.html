@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPERSONIC - Gestão de Estoque & Almoxarifado</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        tech: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            200: '#bcccdc',
+                            300: '#9fb3c8',
+                            400: '#829ab1',
+                            500: '#627d98',
+                            600: '#486581',
+                            700: '#334e68',
+                            800: '#243b53',
+                            900: '#102a43',
+                            950: '#0b1d3a'
+                        },
+                        accent: {
+                            blue: '#3b82f6',
+                            cyan: '#06b6d4',
+                            emerald: '#10b981',
+                            rose: '#f43f5e',
+                            amber: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+        /* Custom scrollbar for dark tech aesthetic */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; color: black; }
+            .glass-panel, .glass-card { background: none; border: 1px solid #ccc; color: black; }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
+
+    <!-- APP CONTAINER -->
+    <div id="app" class="flex-1 flex flex-col min-h-screen">
+
+        <!-- LOGIN SCREEN -->
+        <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
+            <div class="w-full max-w-md p-8 glass-panel rounded-2xl shadow-2xl border border-slate-800/80 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 mb-3 shadow-lg shadow-indigo-500/30">
+                        <i class="fa-solid fa-boxes-stacked text-2xl text-white"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold tracking-tight text-white uppercase">SUPERSONIC CAMPINAS</h1>
+                    <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">ESTOQUE ALMOXARIFADO CAMPINAS</p>
+                </div>
+
+                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-300 mb-1.5">Usuário</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="text" id="loginUsername" required class="w-full pl-10 pr-4 py-2.5 bg-slate-900/90 border border-slate-700/80 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white placeholder-slate-500 transition" placeholder="Informe seu usuário">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-300 mb-1.5">Senha</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="password" id="loginPassword" required class="w-full pl-10 pr-4 py-2.5 bg-slate-900/90 border border-slate-700/80 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white placeholder-slate-500 transition" placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-medium text-sm rounded-xl shadow-lg shadow-indigo-600/25 transition duration-200 active:scale-[0.99]">
+                        Acessar Sistema <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- MAIN LAYOUT (DESKTOP SIDEBAR + CONTENT) -->
+        <div id="mainLayout" class="hidden flex-1 flex flex-col md:flex-row min-h-screen bg-slate-950">
+
+            <!-- SIDEBAR DESKTOP -->
+            <aside class="no-print hidden md:flex flex-col w-64 bg-slate-900/90 border-r border-slate-800/80 justify-between shrink-0">
+                <div>
+                    <!-- LOGO BRAND -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800/80 gap-3">
+                        <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-600 text-white shadow-md shadow-indigo-500/20">
+                            <i class="fa-solid fa-boxes-stacked text-base"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-100 tracking-wide text-xs uppercase">SUPERSONIC</div>
+                            <div class="text-[10px] text-indigo-400 font-medium tracking-widest uppercase">Campinas</div>
+                        </div>
+                    </div>
+
+                    <!-- NAV ITEMS -->
+                    <nav class="p-4 space-y-1.5 text-sm font-medium">
+                        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-indigo-400 bg-indigo-950/50 border border-indigo-800/30">
+                            <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+                        </button>
+                        <button onclick="switchTab('items')" id="nav-items" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                            <i class="fa-solid fa-box-archive w-5 text-center"></i> Cadastro de Peças
+                        </button>
+                        <button onclick="switchTab('inflow')" id="nav-inflow" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                            <i class="fa-solid fa-circle-arrow-down w-5 text-center text-emerald-400"></i> Registrar Entrada
+                        </button>
+                        <button onclick="switchTab('outflow')" id="nav-outflow" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                            <i class="fa-solid fa-circle-arrow-up w-5 text-center text-rose-400"></i> Dar Baixa (Saída)
+                        </button>
+                        <button onclick="switchTab('reports')" id="nav-reports" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                            <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i> Relatórios & Auditoria
+                        </button>
+
+                        <div class="pt-4 pb-1">
+                            <span class="px-3 text-[10px] uppercase tracking-wider font-bold text-slate-500">Cadastros Auxiliares</span>
+                        </div>
+                        <button onclick="switchTab('suppliers')" id="nav-suppliers" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                            <i class="fa-solid fa-truck-field w-5 text-center"></i> Fornecedores
+                        </button>
+                        <button onclick="switchTab('employees')" id="nav-employees" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                            <i class="fa-solid fa-id-card w-5 text-center"></i> Requisitantes
+                        </button>
+                        <button onclick="switchTab('users')" id="nav-users" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                            <i class="fa-solid fa-users-gear w-5 text-center"></i> Operadores / Usuários
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- USER LOGGED PROFILE SIDEBAR -->
+                <div class="p-4 border-t border-slate-800/80 bg-slate-950/40">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2.5 overflow-hidden">
+                            <div class="w-8 h-8 rounded-full bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-indigo-300 font-bold text-xs shrink-0" id="userAvatar">
+                                AD
+                            </div>
+                            <div class="truncate">
+                                <div class="text-xs font-semibold text-slate-200 truncate" id="userNameDisplay">Admin</div>
+                                <div class="text-[10px] text-indigo-400 font-medium capitalize" id="userRoleDisplay">Administrador</div>
+                            </div>
+                        </div>
+                        <button onclick="handleLogout()" title="Sair do Sistema" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT WRAPPER -->
+            <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+
+                <!-- TOP HEADER -->
+                <header class="no-print h-16 bg-slate-900/60 border-b border-slate-800/80 flex items-center justify-between px-4 md:px-8 shrink-0 backdrop-blur-md sticky top-0 z-30">
+                    <div class="flex items-center gap-3 md:hidden">
+                        <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white">
+                            <i class="fa-solid fa-boxes-stacked text-sm"></i>
+                        </div>
+                        <span class="font-bold text-white text-sm">NEXSTOCK</span>
+                    </div>
+
+                    <div class="hidden md:flex items-center gap-2 text-xs text-slate-400">
+                        <i class="fa-solid fa-server text-emerald-400 text-xs"></i>
+                        <span>Servidor Almoxarifado Central: <strong class="text-slate-200 font-mono">ONLINE</strong></span>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="text-right hidden sm:block">
+                            <div class="text-xs text-slate-300 font-medium" id="headerUserGreeting">Olá, Usuário</div>
+                            <div class="text-[10px] text-slate-400" id="currentDateDisplay">--/--/----</div>
+                        </div>
+                        <button onclick="handleLogout()" class="md:hidden text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-rose-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-right-from-bracket"></i> Sair
+                        </button>
+                    </div>
+                </header>
+
+                <!-- PAGE CONTENTS CONTAINER -->
+                <main class="flex-1 p-4 md:p-8 space-y-6">
+
+                    <!-- SECTION 1: DASHBOARD -->
+                    <section id="tab-dashboard" class="tab-content space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-white tracking-tight">Visão Geral do Almoxarifado</h2>
+                                <p class="text-xs text-slate-400">Indicadores em tempo real e atalhos operacionais rápidos.</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="switchTab('inflow')" class="px-3 py-2 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/30 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                                    <i class="fa-solid fa-plus text-xs"></i> Nova Entrada
+                                </button>
+                                <button onclick="switchTab('outflow')" class="px-3 py-2 bg-rose-600/20 text-rose-400 border border-rose-500/30 hover:bg-rose-600/30 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                                    <i class="fa-solid fa-minus text-xs"></i> Dar Baixa
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- KPI CARDS -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="glass-panel p-4 rounded-2xl border border-slate-800">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-medium text-slate-400">Total de Itens</span>
+                                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xs">
+                                        <i class="fa-solid fa-cubes"></i>
+                                    </div>
+                                </div>
+                                <div class="text-2xl font-bold text-white" id="kpiTotalItems">0</div>
+                                <p class="text-[10px] text-slate-500 mt-1">Produtos / Peças cadastradas</p>
+                            </div>
+
+                            <div class="glass-panel p-4 rounded-2xl border border-slate-800">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-medium text-slate-400">Alertas Críticos</span>
+                                    <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center text-xs">
+                                        <i class="fa-solid fa-triangle-exclamation"></i>
+                                    </div>
+                                </div>
+                                <div class="text-2xl font-bold text-rose-400" id="kpiCriticalAlerts">0</div>
+                                <p class="text-[10px] text-slate-500 mt-1">Abaixo do estoque mínimo</p>
+                            </div>
+
+                            <div class="glass-panel p-4 rounded-2xl border border-slate-800">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-medium text-slate-400">Valor Imobilizado</span>
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs">
+                                        <i class="fa-solid fa-sack-dollar"></i>
+                                    </div>
+                                </div>
+                                <div class="text-xl sm:text-2xl font-bold text-emerald-400" id="kpiTotalValue">R$ 0,00</div>
+                                <p class="text-[10px] text-slate-500 mt-1">Patrimônio total estocado</p>
+                            </div>
+
+                            <div class="glass-panel p-4 rounded-2xl border border-slate-800">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-medium text-slate-400">Movimentações Hoje</span>
+                                    <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xs">
+                                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                                    </div>
+                                </div>
+                                <div class="text-2xl font-bold text-white" id="kpiTodayMoves">0</div>
+                                <p class="text-[10px] text-slate-500 mt-1">Entradas e saídas registradas</p>
+                            </div>
+                        </div>
+
+                        <!-- RECENT MOVEMENTS & ALERT SECTION -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- CRITICAL STOCK LIST -->
+                            <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Estoque Crítico
+                                    </h3>
+                                    <span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20" id="criticalCountBadge">0 itens</span>
+                                </div>
+                                <div class="space-y-3 overflow-y-auto max-h-72 pr-1 flex-1" id="dashCriticalList">
+                                    <!-- Items injected dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- TODAY LOGS -->
+                            <div class="lg:col-span-2 glass-panel p-5 rounded-2xl border border-slate-800">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i> Últimas Movimentações
+                                    </h3>
+                                    <button onclick="switchTab('reports')" class="text-xs text-indigo-400 hover:text-indigo-300">Ver todas <i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-xs">
+                                        <thead class="bg-slate-900/80 text-slate-400 uppercase text-[10px]">
+                                            <tr>
+                                                <th class="p-2.5 rounded-l-lg">Tipo</th>
+                                                <th class="p-2.5">Código / Peça</th>
+                                                <th class="p-2.5">Qtd</th>
+                                                <th class="p-2.5">Requisitante / Origem</th>
+                                                <th class="p-2.5 rounded-r-lg">Operador</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="dashRecentTable" class="divide-y divide-slate-800/50 text-slate-300">
+                                            <!-- Dynamically populated -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 2: CADASTRO DE PEÇAS & MATERIAIS -->
+                    <section id="tab-items" class="tab-content hidden space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-white tracking-tight">Catálogo de Peças e Almoxarifado</h2>
+                                <p class="text-xs text-slate-400">Gerenciamento completo de itens, localizações físicas e parâmetros de estoque.</p>
+                            </div>
+                            <button onclick="openItemModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 transition">
+                                <i class="fa-solid fa-plus"></i> Novo Item / Peça
+                            </button>
+                        </div>
+
+                        <!-- SEARCH & FILTERS -->
+                        <div class="glass-panel p-4 rounded-2xl border border-slate-800 flex flex-col md:flex-row gap-3">
+                            <div class="relative flex-1">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                                <input type="text" id="itemSearch" oninput="renderItemsTable()" placeholder="Buscar por Código Interno, Descrição..." class="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div class="flex gap-2">
+                                <select id="itemCategoryFilter" onchange="renderItemsTable()" class="bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="">Todas Categorias</option>
+                                    <option value="Peças de Manutenção / Frota">Peças de Manutenção / Frota</option>
+                                    <option value="Material Administrativo">Material Administrativo</option>
+                                </select>
+                                <select id="itemStatusFilter" onchange="renderItemsTable()" class="bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="">Todos Status</option>
+                                    <option value="normal">Estoque Normal</option>
+                                    <option value="low">Estoque Crítico</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- ITEMS TABLE -->
+                        <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px] font-semibold tracking-wider">
+                                        <tr>
+                                            <th class="p-3.5">Código</th>
+                                            <th class="p-3.5">Descrição Técnica</th>
+                                            <th class="p-3.5">Categoria</th>
+                                            <th class="p-3.5">Localização Física</th>
+                                            <th class="p-3.5 text-center">Saldo Atual</th>
+                                            <th class="p-3.5 text-center">Estoque Mín.</th>
+                                            <th class="p-3.5">Preço Médio</th>
+                                            <th class="p-3.5 text-right">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="itemsTableBody" class="divide-y divide-slate-800/60 text-slate-300">
+                                        <!-- Dynamically generated rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 3: MÓDULO DE ENTRADAS -->
+                    <section id="tab-inflow" class="tab-content hidden space-y-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-white tracking-tight">Registro de Entrada de Materiais</h2>
+                            <p class="text-xs text-slate-400">Recebimento com fornecedor, conversão de embalagem para unidades de estoque e ajuste de custo médio.</p>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-3xl">
+                            <form id="inflowForm" onsubmit="handleInflowSubmit(event)" class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-300 mb-1">Selecione o Item / Peça *</label>
+                                        <select id="inflowItem" required onchange="calculateInflowTotal()" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                                            <!-- Dynamically populated -->
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-300 mb-1">Fornecedor *</label>
+                                        <select id="inflowSupplier" required class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                                            <!-- Dynamically populated -->
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-300 mb-1">Qtd Embalagem Nota *</label>
+                                        <input type="number" step="0.01" min="0.01" id="inflowPackageQty" required oninput="calculateInflowTotal()" placeholder="Ex: 5" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-300 mb-1">Tipo da Nota/Embalagem</label>
+                                        <input type="text" id="inflowPackageUnit" placeholder="Ex: CX, Rolo, Pacote" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-300 mb-1">Fator de Conversão *</label>
+                                        <input type="number" step="0.01" min="1" id="inflowConversionFactor" value="1" required oninput="calculateInflowTotal()" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                                        <span class="text-[10px] text-slate-500">Ex: 1 Caixa = 100 UN (Fator 100)</span>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-300 mb-1">Valor Unitário Nota (R$) *</label>
+                                        <input type="number" step="0.01" min="0" id="inflowUnitPrice" required oninput="calculateInflowTotal()" placeholder="0,00" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-300 mb-1">Número Nota Fiscal / Doc.</label>
+                                        <input type="text" id="inflowDocNum" placeholder="Ex: NF-8849" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                </div>
+
+                                <!-- CONVERSION SUMMARY BOX -->
+                                <div class="p-4 bg-slate-900/90 rounded-xl border border-indigo-500/20 space-y-1 text-xs">
+                                    <div class="text-indigo-400 font-semibold flex items-center gap-1.5">
+                                        <i class="fa-solid fa-calculator"></i> Resumo do Impacto no Estoque:
+                                    </div>
+                                    <div class="flex justify-between text-slate-300">
+                                        <span>Quantidade Real a Entrar no Estoque:</span>
+                                        <strong id="summaryInflowRealQty" class="text-emerald-400 font-mono">0 UN</strong>
+                                    </div>
+                                    <div class="flex justify-between text-slate-300">
+                                        <span>Custo Real Unitário do Item:</span>
+                                        <strong id="summaryInflowRealUnitCost" class="text-white font-mono">R$ 0,00</strong>
+                                    </div>
+                                    <div class="flex justify-between text-slate-300">
+                                        <span>Valor Total da Entrada:</span>
+                                        <strong id="summaryInflowTotalVal" class="text-emerald-400 font-mono">R$ 0,00</strong>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-600/20 transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-circle-check"></i> Confirmar Registro de Entrada
+                                </button>
+                            </form>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 4: MÓDULO DE SAÍDAS / BAIXAS -->
+                    <section id="tab-outflow" class="tab-content hidden space-y-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-white tracking-tight">Dar Baixa no Estoque (Saída de Materiais)</h2>
+                            <p class="text-xs text-slate-400">Rastreabilidade obrigatória de Requisitante e Responsável da Entrega.</p>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-3xl">
+                            <form id="outflowForm" onsubmit="handleOutflowSubmit(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1">Selecione o Item / Peça *</label>
+                                    <select id="outflowItem" required onchange="updateOutflowStockMax()" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                                        <!-- Dynamically populated -->
+                                    </select>
+                                    <div class="mt-1 text-[11px] text-slate-400 flex justify-between">
+                                        <span id="outflowStockAvailable">Saldo Disponível: -</span>
+                                        <span id="outflowLocationDisplay">Localização: -</span>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-300 mb-1">Funcionário Requisitante (Quem Retirou) *</label>
+                                        <select id="outflowEmployee" required class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                                            <!-- Dynamically populated -->
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-300 mb-1">Quantidade da Baixa *</label>
+                                        <input type="number" step="0.01" min="0.01" id="outflowQty" required placeholder="0" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1">Motivo / Destino / Ordem de Serviço *</label>
+                                    <input type="text" id="outflowReason" required placeholder="Ex: Manutenção Preventiva Máquina 03, Reforma Sala Admin..." class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                                </div>
+
+                                <div class="p-3.5 bg-slate-900/90 rounded-xl border border-indigo-500/20 text-xs flex items-center justify-between">
+                                    <span class="text-slate-400">Almoxarife Responsável (Entregador):</span>
+                                    <strong class="text-indigo-400 font-semibold" id="outflowLoggedUserDisplay">Admin</strong>
+                                </div>
+
+                                <button type="submit" class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-rose-600/20 transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-circle-minus"></i> Confirmar Baixa de Material
+                                </button>
+                            </form>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 5: RELATÓRIOS E AUDITORIA -->
+                    <section id="tab-reports" class="tab-content hidden space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-white tracking-tight">Relatório Geral e Rastreabilidade</h2>
+                                <p class="text-xs text-slate-400">Histórico detalhado de entradas, saídas e movimentações de estoque.</p>
+                            </div>
+                            <div class="flex items-center gap-2 no-print">
+                                <button onclick="exportToCSV()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center gap-2 transition">
+                                    <i class="fa-solid fa-file-excel text-emerald-400"></i> Exportar CSV
+                                </button>
+                                <button onclick="window.print()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center gap-2 transition">
+                                    <i class="fa-solid fa-print text-cyan-400"></i> Imprimir
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- FILTERS -->
+                        <div class="glass-panel p-4 rounded-2xl border border-slate-800 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 no-print">
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Tipo Movimento</label>
+                                <select id="reportTypeFilter" onchange="renderReportsTable()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-slate-200">
+                                    <option value="">Todos</option>
+                                    <option value="ENTRADA">Entradas</option>
+                                    <option value="SAIDA">Saídas (Baixas)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Data Início</label>
+                                <input type="date" id="reportStartDate" onchange="renderReportsTable()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-slate-200">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Data Fim</label>
+                                <input type="date" id="reportEndDate" onchange="renderReportsTable()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-slate-200">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Buscar Termo</label>
+                                <input type="text" id="reportSearch" oninput="renderReportsTable()" placeholder="Peça, Requisitante..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-slate-200">
+                            </div>
+                        </div>
+
+                        <!-- REPORT TABLE -->
+                        <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px] font-semibold tracking-wider">
+                                        <tr>
+                                            <th class="p-3.5">Data / Hora</th>
+                                            <th class="p-3.5">Tipo</th>
+                                            <th class="p-3.5">Código / Item</th>
+                                            <th class="p-3.5 text-center">Qtd</th>
+                                            <th class="p-3.5">Retirado Por / Fornecedor</th>
+                                            <th class="p-3.5">Entregue / Cadastrado Por</th>
+                                            <th class="p-3.5">Motivo / Doc</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reportTableBody" class="divide-y divide-slate-800/60 text-slate-300">
+                                        <!-- Dynamic content -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 6: CADASTROS AUXILIARES (FORNECEDORES) -->
+                    <section id="tab-suppliers" class="tab-content hidden space-y-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-xl font-bold text-white tracking-tight">Cadastro de Fornecedores</h2>
+                                <p class="text-xs text-slate-400">Empresas parceiras para emissão de pedidos e entrada de notas.</p>
+                            </div>
+                            <button onclick="openSupplierModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition">
+                                <i class="fa-solid fa-plus"></i> Novo Fornecedor
+                            </button>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px]">
+                                        <tr>
+                                            <th class="p-3.5">CNPJ</th>
+                                            <th class="p-3.5">Razão Social</th>
+                                            <th class="p-3.5">Nome Fantasia</th>
+                                            <th class="p-3.5">Telefone / Contato</th>
+                                            <th class="p-3.5 text-right">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="suppliersTableBody" class="divide-y divide-slate-800/60 text-slate-300">
+                                        <!-- Dynamic Rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 7: CADASTROS AUXILIARES (REQUISITANTES) -->
+                    <section id="tab-employees" class="tab-content hidden space-y-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-xl font-bold text-white tracking-tight">Funcionários Requisitantes</h2>
+                                <p class="text-xs text-slate-400">Colaboradores autorizados a solicitar e retirar itens no almoxarifado.</p>
+                            </div>
+                            <button onclick="openEmployeeModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition">
+                                <i class="fa-solid fa-plus"></i> Novo Requisitante
+                            </button>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px]">
+                                        <tr>
+                                            <th class="p-3.5">Matrícula / Cód</th>
+                                            <th class="p-3.5">Nome Completo</th>
+                                            <th class="p-3.5">Setor / Departamento</th>
+                                            <th class="p-3.5">Cargo</th>
+                                            <th class="p-3.5 text-right">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="employeesTableBody" class="divide-y divide-slate-800/60 text-slate-300">
+                                        <!-- Dynamic Rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 8: USUÁRIOS DO SISTEMA -->
+                    <section id="tab-users" class="tab-content hidden space-y-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-xl font-bold text-white tracking-tight">Gestão de Operadores e Administradores</h2>
+                                <p class="text-xs text-slate-400">Controle de credenciais e níveis de acesso ao sistema.</p>
+                            </div>
+                            <button id="btnNewUser" onclick="openUserModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition">
+                                <i class="fa-solid fa-user-plus"></i> Novo Usuário
+                            </button>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px]">
+                                        <tr>
+                                            <th class="p-3.5">Login / Usuário</th>
+                                            <th class="p-3.5">Nome Completo</th>
+                                            <th class="p-3.5">Nível de Acesso</th>
+                                            <th class="p-3.5 text-right">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody" class="divide-y divide-slate-800/60 text-slate-300">
+                                        <!-- Dynamic Rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                </main>
+            </div>
+        </div>
+
+        <!-- MOBILE BOTTOM NAVIGATION (SaaS MOBILE-FIRST UX) -->
+        <nav class="no-print md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 border-t border-slate-800 backdrop-blur-lg z-40 px-2 py-2 flex justify-around items-center text-slate-400 text-[10px]">
+            <button onclick="switchTab('dashboard')" id="mob-dashboard" class="flex flex-col items-center gap-1 p-1 text-indigo-400">
+                <i class="fa-solid fa-chart-pie text-base"></i>
+                <span>Inicio</span>
+            </button>
+            <button onclick="switchTab('items')" id="mob-items" class="flex flex-col items-center gap-1 p-1">
+                <i class="fa-solid fa-box-archive text-base"></i>
+                <span>Peças</span>
+            </button>
+            <button onclick="switchTab('inflow')" id="mob-inflow" class="flex flex-col items-center gap-1 p-1">
+                <i class="fa-solid fa-circle-arrow-down text-base text-emerald-400"></i>
+                <span>Entrada</span>
+            </button>
+            <button onclick="switchTab('outflow')" id="mob-outflow" class="flex flex-col items-center gap-1 p-1">
+                <i class="fa-solid fa-circle-arrow-up text-base text-rose-400"></i>
+                <span>Baixa</span>
+            </button>
+            <button onclick="switchTab('reports')" id="mob-reports" class="flex flex-col items-center gap-1 p-1">
+                <i class="fa-solid fa-file-invoice text-base"></i>
+                <span>Auditoria</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- MODAL CONTAINER -->
+    <div id="modalOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div id="modalBox" class="w-full max-w-lg glass-panel p-6 rounded-2xl border border-slate-800 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="modalContent">
+                <!-- Dynamically Injected Forms -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SYSTEM TOAST MESSAGE -->
+    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300 ease-in-out max-w-sm p-4 rounded-xl shadow-2xl flex items-center gap-3 border text-xs font-semibold">
+        <i id="toastIcon" class="text-base"></i>
+        <span id="toastMessage">Mensagem de aviso</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // DATA INITIALIZATION & STORAGE KEYS
+        const STORAGE_KEY = 'NEXSTOCK_DB_V1';
+        let db = {
+            users: [],
+            items: [],
+            suppliers: [],
+            employees: [],
+            movements: []
+        };
+
+        let currentUser = null;
+
+        // SEED INITIAL DATA FOR DEMO
+        function seedData() {
+            return {
+                users: [
+                    { id: 'usr-0', username: 'Nicolas Camilo', password: '321', name: 'Nicolas Camilo', role: 'admin' },
+                    { id: 'usr-2', username: 'operador', password: '123', name: 'Marcos Almoxarife', role: 'operator' }
+                ],
+                suppliers: [
+                    { id: 'sup-1', cnpj: '12.345.678/0001-90', name: 'Autopeças & Rolamentos Brasil Ltda', tradeName: 'AutoPeças Brasil', phone: '(19) 3888-1000' },
+                    { id: 'sup-2', cnpj: '98.765.432/0001-10', name: 'Suprimentos Escritório e Papelaria S.A.', tradeName: 'SupriOffice', phone: '(11) 4004-2020' }
+                ],
+                employees: [
+                    { id: 'emp-1', code: 'FUN-102', name: 'João Roberto Silva', department: 'Manutenção Industrial', role: 'Técnico Mecânico' },
+                    { id: 'emp-2', code: 'FUN-205', name: 'Ana Paula Souza', department: 'Administração / RH', role: 'Auxiliar Administrativo' }
+                ],
+                items: [
+                    {
+                        id: 'item-1',
+                        code: 'PEC-001',
+                        description: 'Rolamento Esférico Skf 6205-2RS',
+                        category: 'Peças de Manutenção / Frota',
+                        aisle: 'Corredor A',
+                        shelf: 'Prateleira 03',
+                        drawer: 'Gaveta B12',
+                        qty: 18,
+                        minQty: 10,
+                        unit: 'Peça',
+                        price: 45.50
+                    },
+                    {
+                        id: 'item-2',
+                        code: 'PEC-002',
+                        description: 'Filtro de Óleo Lubrificante Motor Diesel',
+                        category: 'Peças de Manutenção / Frota',
+                        aisle: 'Corredor A',
+                        shelf: 'Prateleira 01',
+                        drawer: 'Gaveta A04',
+                        qty: 3,
+                        minQty: 8,
+                        unit: 'Unidade',
+                        price: 85.00
+                    },
+                    {
+                        id: 'item-3',
+                        code: 'ADM-010',
+                        description: 'Papel A4 Resma 500 Folhas Chamex',
+                        category: 'Material Administrativo',
+                        aisle: 'Corredor C',
+                        shelf: 'Prateleira 02',
+                        drawer: 'Palete 01',
+                        qty: 45,
+                        minQty: 20,
+                        unit: 'Resma',
+                        price: 26.90
+                    }
+                ],
+                movements: [
+                    {
+                        id: 'mov-1',
+                        timestamp: new Date().toISOString(),
+                        type: 'ENTRADA',
+                        itemId: 'item-1',
+                        itemCode: 'PEC-001',
+                        itemDesc: 'Rolamento Esférico Skf 6205-2RS',
+                        qty: 20,
+                        user: 'admin',
+                        userName: 'Carlos Santos (Admin)',
+                        supplierOrEmp: 'AutoPeças Brasil',
+                        reasonDoc: 'NF-10492'
+                    }
+                ]
+            };
+        }
+
+        function loadDatabase() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    db = JSON.parse(stored);
+                    
+                    // Remova o usuário demo antigo 'admin' caso ainda exista no localStorage
+                    if (db.users) {
+                        db.users = db.users.filter(u => u.username.toLowerCase() !== 'admin');
+                    }
+
+                    // Garantir que a conta do Nicolas Camilo esteja presente
+                    const nicolasExists = db.users && db.users.some(u => u.username.toLowerCase() === 'nicolas camilo');
+                    if (!nicolasExists) {
+                        db.users.unshift({ id: 'usr-0', username: 'Nicolas Camilo', password: '321', name: 'Nicolas Camilo', role: 'admin' });
+                    }
+                    saveDatabase();
+                } catch (e) {
+                    db = seedData();
+                    saveDatabase();
+                }
+            } else {
+                db = seedData();
+                saveDatabase();
+            }
+        }
+
+        function saveDatabase() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        }
+
+        // INIT SYSTEM
+        window.onload = function() {
+            loadDatabase();
+            checkSession();
+            document.getElementById('currentDateDisplay').innerText = new Date().toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+        };
+
+        // AUTHENTICATION LOGIC
+        function handleLogin(e) {
+            e.preventDefault();
+            const userIn = document.getElementById('loginUsername').value.trim();
+            const passIn = document.getElementById('loginPassword').value.trim();
+
+            const found = db.users.find(u => u.username.trim().toLowerCase() === userIn.toLowerCase() && u.password === passIn);
+
+            if (found) {
+                currentUser = found;
+                sessionStorage.setItem('NEXSTOCK_LOGGED_USER', JSON.stringify(found));
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainLayout').classList.remove('hidden');
+                setupUserUI();
+                showToast('Login efetuado com sucesso!', 'success');
+                switchTab('dashboard');
+            } else {
+                showToast('Usuário ou senha incorretos!', 'error');
+            }
+        }
+
+        function checkSession() {
+            const session = sessionStorage.getItem('NEXSTOCK_LOGGED_USER');
+            if (session) {
+                try {
+                    currentUser = JSON.parse(session);
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('mainLayout').classList.remove('hidden');
+                    setupUserUI();
+                    switchTab('dashboard');
+                } catch(e) {
+                    sessionStorage.removeItem('NEXSTOCK_LOGGED_USER');
+                }
+            }
+        }
+
+        function setupUserUI() {
+            if (!currentUser) return;
+            document.getElementById('userNameDisplay').innerText = currentUser.name;
+            document.getElementById('userRoleDisplay').innerText = currentUser.role === 'admin' ? 'Administrador' : 'Almoxarife/Operador';
+            document.getElementById('userAvatar').innerText = currentUser.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+            document.getElementById('headerUserGreeting').innerText = `Olá, ${currentUser.name}`;
+            document.getElementById('outflowLoggedUserDisplay').innerText = `${currentUser.name} (${currentUser.username})`;
+
+            // Hide admin buttons if operator
+            if (currentUser.role !== 'admin') {
+                document.getElementById('btnNewUser')?.classList.add('hidden');
+            } else {
+                document.getElementById('btnNewUser')?.classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('NEXSTOCK_LOGGED_USER');
+            currentUser = null;
+            document.getElementById('mainLayout').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            showToast('Sessão encerrada com segurança.', 'info');
+        }
+
+        // TAB NAVIGATION
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            // Desktop active state
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-indigo-400', 'bg-indigo-950/50', 'border', 'border-indigo-800/30');
+                btn.classList.add('text-slate-400');
+            });
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.classList.remove('text-slate-400');
+                activeNav.classList.add('text-indigo-400', 'bg-indigo-950/50', 'border', 'border-indigo-800/30');
+            }
+
+            // Mobile active state
+            const mobBtns = ['dashboard', 'items', 'inflow', 'outflow', 'reports'];
+            mobBtns.forEach(m => {
+                const el = document.getElementById(`mob-${m}`);
+                if (el) el.classList.remove('text-indigo-400');
+            });
+            const activeMob = document.getElementById(`mob-${tabId}`);
+            if (activeMob) activeMob.classList.add('text-indigo-400');
+
+            // Render Tab Specific Logic
+            if (tabId === 'dashboard') renderDashboard();
+            if (tabId === 'items') renderItemsTable();
+            if (tabId === 'inflow') populateInflowDropdowns();
+            if (tabId === 'outflow') populateOutflowDropdowns();
+            if (tabId === 'reports') renderReportsTable();
+            if (tabId === 'suppliers') renderSuppliersTable();
+            if (tabId === 'employees') renderEmployeesTable();
+            if (tabId === 'users') renderUsersTable();
+        }
+
+        // TOAST ALERT SYSTEM
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMessage.innerText = message;
+
+            if (type === 'success') {
+                toast.className = "fixed top-5 right-5 z-50 transition-all duration-300 max-w-sm p-4 rounded-xl shadow-2xl flex items-center gap-3 border bg-slate-900 border-emerald-500/50 text-emerald-400";
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400";
+            } else if (type === 'error') {
+                toast.className = "fixed top-5 right-5 z-50 transition-all duration-300 max-w-sm p-4 rounded-xl shadow-2xl flex items-center gap-3 border bg-slate-900 border-rose-500/50 text-rose-400";
+                toastIcon.className = "fa-solid fa-circle-xmark text-rose-400";
+            } else {
+                toast.className = "fixed top-5 right-5 z-50 transition-all duration-300 max-w-sm p-4 rounded-xl shadow-2xl flex items-center gap-3 border bg-slate-900 border-indigo-500/50 text-indigo-400";
+                toastIcon.className = "fa-solid fa-circle-info text-indigo-400";
+            }
+
+            toast.classList.remove('translate-x-full');
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3500);
+        }
+
+        // DASHBOARD RENDER
+        function renderDashboard() {
+            const totalItems = db.items.length;
+            const criticalItems = db.items.filter(i => i.qty <= i.minQty);
+            const totalVal = db.items.reduce((acc, i) => acc + (i.qty * i.price), 0);
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayMoves = db.movements.filter(m => m.timestamp.startsWith(todayStr)).length;
+
+            document.getElementById('kpiTotalItems').innerText = totalItems;
+            document.getElementById('kpiCriticalAlerts').innerText = criticalItems.length;
+            document.getElementById('kpiTotalValue').innerText = totalVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('kpiTodayMoves').innerText = todayMoves;
+            document.getElementById('criticalCountBadge').innerText = `${criticalItems.length} com alerta`;
+
+            // Render Critical Stock Widget
+            const dashCriticalList = document.getElementById('dashCriticalList');
+            if (criticalItems.length === 0) {
+                dashCriticalList.innerHTML = `<div class="text-xs text-slate-500 text-center py-6">Nenhum item em estado crítico.</div>`;
+            } else {
+                dashCriticalList.innerHTML = criticalItems.map(item => `
+                    <div class="p-2.5 glass-card rounded-xl border border-slate-800 flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-xs text-slate-200">${item.code} - ${item.description}</div>
+                            <div class="text-[10px] text-slate-400">Local: ${item.aisle} | ${item.shelf}</div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold text-rose-400">${item.qty} ${item.unit}</span>
+                            <div class="text-[10px] text-slate-500">Mín: ${item.minQty}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Render Recent Movements
+            const recent = [...db.movements].reverse().slice(0, 5);
+            const dashRecentTable = document.getElementById('dashRecentTable');
+            if (recent.length === 0) {
+                dashRecentTable.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Nenhuma movimentação recente.</td></tr>`;
+            } else {
+                dashRecentTable.innerHTML = recent.map(m => `
+                    <tr class="hover:bg-slate-900/50">
+                        <td class="p-2.5 font-bold ${m.type === 'ENTRADA' ? 'text-emerald-400' : 'text-rose-400'}">
+                            ${m.type === 'ENTRADA' ? '<i class="fa-solid fa-arrow-down mr-1"></i> Entrada' : '<i class="fa-solid fa-arrow-up mr-1"></i> Saída'}
+                        </td>
+                        <td class="p-2.5 font-medium text-slate-200">${m.itemCode} <span class="text-slate-500 font-normal">(${m.itemDesc})</span></td>
+                        <td class="p-2.5 font-semibold">${m.qty}</td>
+                        <td class="p-2.5 text-slate-400">${m.supplierOrEmp}</td>
+                        <td class="p-2.5 text-slate-400">${m.userName}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // CATALOG & ITEMS LOGIC
+        function renderItemsTable() {
+            const search = document.getElementById('itemSearch').value.toLowerCase();
+            const catFilter = document.getElementById('itemCategoryFilter').value;
+            const statusFilter = document.getElementById('itemStatusFilter').value;
+
+            let filtered = db.items.filter(item => {
+                const matchSearch = item.code.toLowerCase().includes(search) || item.description.toLowerCase().includes(search);
+                const matchCat = catFilter ? item.category === catFilter : true;
+                let matchStatus = true;
+                if (statusFilter === 'low') matchStatus = item.qty <= item.minQty;
+                if (statusFilter === 'normal') matchStatus = item.qty > item.minQty;
+                return matchSearch && matchCat && matchStatus;
+            });
+
+            const tbody = document.getElementById('itemsTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-500">Nenhum item encontrado no estoque.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                const isCritical = item.qty <= item.minQty;
+                return `
+                <tr class="hover:bg-slate-900/50 transition border-b border-slate-800/40">
+                    <td class="p-3.5 font-mono font-bold text-indigo-400">${item.code}</td>
+                    <td class="p-3.5 font-medium text-slate-200">${item.description}</td>
+                    <td class="p-3.5"><span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-300 border border-slate-700">${item.category}</span></td>
+                    <td class="p-3.5 text-slate-400 text-[11px]">${item.aisle} / ${item.shelf} / ${item.drawer}</td>
+                    <td class="p-3.5 text-center font-bold text-sm">
+                        <span class="${isCritical ? 'text-rose-400 font-extrabold' : 'text-slate-200'}">
+                            ${item.qty} ${item.unit}
+                        </span>
+                        ${isCritical ? '<span class="ml-1.5 px-1.5 py-0.2 rounded text-[9px] bg-rose-500/20 text-rose-400 border border-rose-500/30">MÍN</span>' : ''}
+                    </td>
+                    <td class="p-3.5 text-center text-slate-400">${item.minQty} ${item.unit}</td>
+                    <td class="p-3.5 font-mono text-emerald-400">${item.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                    <td class="p-3.5 text-right space-x-1">
+                        <button onclick="openItemModal('${item.id}')" title="Editar" class="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-slate-800 rounded-lg transition">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="deleteItem('${item.id}')" title="Excluir" class="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function openItemModal(itemId = null) {
+            const item = itemId ? db.items.find(i => i.id === itemId) : null;
+            const content = `
+                <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-box-archive text-indigo-400"></i> ${item ? 'Editar Item' : 'Cadastrar Novo Item'}
+                </h3>
+                <form onsubmit="saveItem(event, '${itemId || ''}')" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Código Interno *</label>
+                            <input type="text" id="mCode" required value="${item ? item.code : ''}" placeholder="ex: PEC-003" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Unidade de Medida *</label>
+                            <input type="text" id="mUnit" required value="${item ? item.unit : 'Unidade'}" placeholder="ex: Peça, Metro, Litro" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Descrição Técnica *</label>
+                        <input type="text" id="mDesc" required value="${item ? item.description : ''}" placeholder="Descrição detalhada do item" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Categoria *</label>
+                        <select id="mCategory" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                            <option value="Peças de Manutenção / Frota" ${item && item.category === 'Peças de Manutenção / Frota' ? 'selected' : ''}>Peças de Manutenção / Frota</option>
+                            <option value="Material Administrativo" ${item && item.category === 'Material Administrativo' ? 'selected' : ''}>Material Administrativo</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Corredor</label>
+                            <input type="text" id="mAisle" value="${item ? item.aisle : 'Corredor A'}" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Prateleira</label>
+                            <input type="text" id="mShelf" value="${item ? item.shelf : 'Prateleira 01'}" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Gaveta / Box</label>
+                            <input type="text" id="mDrawer" value="${item ? item.drawer : 'Gaveta 01'}" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Estoque Inicial</label>
+                            <input type="number" step="0.01" min="0" id="mQty" value="${item ? item.qty : 0}" ${item ? 'disabled' : ''} class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Estoque Mínimo *</label>
+                            <input type="number" step="0.01" min="0" id="mMinQty" required value="${item ? item.minQty : 5}" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Preço Médio (R$) *</label>
+                            <input type="number" step="0.01" min="0" id="mPrice" required value="${item ? item.price : 0}" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full mt-2 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg transition">
+                        Salvar Item
+                    </button>
+                </form>
+            `;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('modalOverlay').classList.remove('hidden');
+        }
+
+        function saveItem(e, itemId) {
+            e.preventDefault();
+            const code = document.getElementById('mCode').value.trim();
+            const unit = document.getElementById('mUnit').value.trim();
+            const description = document.getElementById('mDesc').value.trim();
+            const category = document.getElementById('mCategory').value;
+            const aisle = document.getElementById('mAisle').value.trim();
+            const shelf = document.getElementById('mShelf').value.trim();
+            const drawer = document.getElementById('mDrawer').value.trim();
+            const minQty = parseFloat(document.getElementById('mMinQty').value);
+            const price = parseFloat(document.getElementById('mPrice').value);
+
+            if (itemId) {
+                const item = db.items.find(i => i.id === itemId);
+                if (item) {
+                    item.code = code;
+                    item.unit = unit;
+                    item.description = description;
+                    item.category = category;
+                    item.aisle = aisle;
+                    item.shelf = shelf;
+                    item.drawer = drawer;
+                    item.minQty = minQty;
+                    item.price = price;
+                }
+            } else {
+                const qty = parseFloat(document.getElementById('mQty').value) || 0;
+                const newItem = {
+                    id: 'item-' + Date.now(),
+                    code, unit, description, category, aisle, shelf, drawer, qty, minQty, price
+                };
+                db.items.push(newItem);
+            }
+
+            saveDatabase();
+            closeModal();
+            renderItemsTable();
+            showToast('Item salvo com sucesso!', 'success');
+        }
+
+        function deleteItem(itemId) {
+            if (confirm('Tem certeza que deseja excluir esta peça do cadastro?')) {
+                db.items = db.items.filter(i => i.id !== itemId);
+                saveDatabase();
+                renderItemsTable();
+                showToast('Item removido com sucesso.', 'info');
+            }
+        }
+
+        // INFLOW (ENTRADAS) MODULE
+        function populateInflowDropdowns() {
+            const itemSelect = document.getElementById('inflowItem');
+            itemSelect.innerHTML = db.items.map(i => `<option value="${i.id}">${i.code} - ${i.description} (Estoque Atual: ${i.qty} ${i.unit})</option>`).join('');
+
+            const supSelect = document.getElementById('inflowSupplier');
+            supSelect.innerHTML = db.suppliers.map(s => `<option value="${s.id}">${s.tradeName} (${s.cnpj})</option>`).join('');
+
+            calculateInflowTotal();
+        }
+
+        function calculateInflowTotal() {
+            const packageQty = parseFloat(document.getElementById('inflowPackageQty').value) || 0;
+            const factor = parseFloat(document.getElementById('inflowConversionFactor').value) || 1;
+            const unitPrice = parseFloat(document.getElementById('inflowUnitPrice').value) || 0;
+
+            const realQty = packageQty * factor;
+            const totalPrice = packageQty * unitPrice;
+            const realUnitCost = realQty > 0 ? (totalPrice / realQty) : 0;
+
+            const selectedItemId = document.getElementById('inflowItem').value;
+            const selectedItem = db.items.find(i => i.id === selectedItemId);
+            const unitName = selectedItem ? selectedItem.unit : 'UN';
+
+            document.getElementById('summaryInflowRealQty').innerText = `${realQty} ${unitName}`;
+            document.getElementById('summaryInflowRealUnitCost').innerText = realUnitCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('summaryInflowTotalVal').innerText = totalPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function handleInflowSubmit(e) {
+            e.preventDefault();
+            const itemId = document.getElementById('inflowItem').value;
+            const supplierId = document.getElementById('inflowSupplier').value;
+            const packageQty = parseFloat(document.getElementById('inflowPackageQty').value);
+            const factor = parseFloat(document.getElementById('inflowConversionFactor').value);
+            const unitPrice = parseFloat(document.getElementById('inflowUnitPrice').value);
+            const docNum = document.getElementById('inflowDocNum').value.trim() || 'S/N';
+
+            const item = db.items.find(i => i.id === itemId);
+            const supplier = db.suppliers.find(s => s.id === supplierId);
+
+            if (!item || !supplier) return;
+
+            const realQtyAdded = packageQty * factor;
+            const totalPrice = packageQty * unitPrice;
+
+            // Recalculate Average Price
+            const oldTotalVal = item.qty * item.price;
+            const newTotalQty = item.qty + realQtyAdded;
+            const newAvgPrice = newTotalQty > 0 ? ((oldTotalVal + totalPrice) / newTotalQty) : item.price;
+
+            item.qty = newTotalQty;
+            item.price = newAvgPrice;
+
+            // Log Movement Traceability
+            const movement = {
+                id: 'mov-' + Date.now(),
+                timestamp: new Date().toISOString(),
+                type: 'ENTRADA',
+                itemId: item.id,
+                itemCode: item.code,
+                itemDesc: item.description,
+                qty: realQtyAdded,
+                user: currentUser.username,
+                userName: currentUser.name,
+                supplierOrEmp: supplier.tradeName,
+                reasonDoc: docNum
+            };
+
+            db.movements.push(movement);
+            saveDatabase();
+
+            showToast(`Entrada efetuada: +${realQtyAdded} ${item.unit} ao estoque.`, 'success');
+            document.getElementById('inflowForm').reset();
+            document.getElementById('inflowConversionFactor').value = "1";
+            populateInflowDropdowns();
+        }
+
+        // OUTFLOW (BAIXAS) MODULE
+        function populateOutflowDropdowns() {
+            const itemSelect = document.getElementById('outflowItem');
+            itemSelect.innerHTML = db.items.map(i => `<option value="${i.id}">${i.code} - ${i.description}</option>`).join('');
+
+            const empSelect = document.getElementById('outflowEmployee');
+            empSelect.innerHTML = db.employees.map(e => `<option value="${e.id}">${e.code} - ${e.name} (${e.department})</option>`).join('');
+
+            updateOutflowStockMax();
+        }
+
+        function updateOutflowStockMax() {
+            const selectedItemId = document.getElementById('outflowItem').value;
+            const item = db.items.find(i => i.id === selectedItemId);
+            if (item) {
+                document.getElementById('outflowStockAvailable').innerText = `Saldo Disponível: ${item.qty} ${item.unit}`;
+                document.getElementById('outflowLocationDisplay').innerText = `Localização: ${item.aisle} / ${item.shelf} / ${item.drawer}`;
+            }
+        }
+
+        function handleOutflowSubmit(e) {
+            e.preventDefault();
+            const itemId = document.getElementById('outflowItem').value;
+            const employeeId = document.getElementById('outflowEmployee').value;
+            const qtyOut = parseFloat(document.getElementById('outflowQty').value);
+            const reason = document.getElementById('outflowReason').value.trim();
+
+            const item = db.items.find(i => i.id === itemId);
+            const employee = db.employees.find(e => e.id === employeeId);
+
+            if (!item || !employee) return;
+
+            if (qtyOut > item.qty) {
+                showToast(`Saldo insuficiente em estoque! Saldo disponível: ${item.qty} ${item.unit}`, 'error');
+                return;
+            }
+
+            item.qty -= qtyOut;
+
+            // Log Movement Traceability (Dual Traceability)
+            const movement = {
+                id: 'mov-' + Date.now(),
+                timestamp: new Date().toISOString(),
+                type: 'SAIDA',
+                itemId: item.id,
+                itemCode: item.code,
+                itemDesc: item.description,
+                qty: qtyOut,
+                user: currentUser.username,
+                userName: currentUser.name,
+                supplierOrEmp: `${employee.name} (${employee.department})`,
+                reasonDoc: reason
+            };
+
+            db.movements.push(movement);
+            saveDatabase();
+
+            showToast(`Baixa registrada com sucesso! Retirado: ${qtyOut} ${item.unit}`, 'success');
+            document.getElementById('outflowForm').reset();
+            populateOutflowDropdowns();
+        }
+
+        // AUDIT & REPORTS
+        function renderReportsTable() {
+            const typeFilter = document.getElementById('reportTypeFilter').value;
+            const startDate = document.getElementById('reportStartDate').value;
+            const endDate = document.getElementById('reportEndDate').value;
+            const search = document.getElementById('reportSearch').value.toLowerCase();
+
+            let filtered = db.movements.filter(m => {
+                const matchType = typeFilter ? m.type === typeFilter : true;
+                const matchSearch = m.itemCode.toLowerCase().includes(search) || 
+                                    m.itemDesc.toLowerCase().includes(search) || 
+                                    m.supplierOrEmp.toLowerCase().includes(search) ||
+                                    m.userName.toLowerCase().includes(search);
+                
+                let matchDate = true;
+                const mDate = m.timestamp.split('T')[0];
+                if (startDate && mDate < startDate) matchDate = false;
+                if (endDate && mDate > endDate) matchDate = false;
+
+                return matchType && matchSearch && matchDate;
+            });
+
+            filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            const tbody = document.getElementById('reportTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">Nenhuma movimentação para os filtros selecionados.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(m => {
+                const dt = new Date(m.timestamp);
+                const dateFormatted = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                return `
+                <tr class="hover:bg-slate-900/50 transition border-b border-slate-800/40">
+                    <td class="p-3.5 text-[11px] font-mono text-slate-400">${dateFormatted}</td>
+                    <td class="p-3.5 font-bold ${m.type === 'ENTRADA' ? 'text-emerald-400' : 'text-rose-400'}">
+                        ${m.type === 'ENTRADA' ? '<i class="fa-solid fa-arrow-down mr-1"></i> Entr' : '<i class="fa-solid fa-arrow-up mr-1"></i> Saí'}
+                    </td>
+                    <td class="p-3.5 font-medium text-slate-200">${m.itemCode} <span class="text-slate-500 text-[11px]">(${m.itemDesc})</span></td>
+                    <td class="p-3.5 text-center font-bold text-slate-200">${m.qty}</td>
+                    <td class="p-3.5 text-slate-300 font-medium">${m.supplierOrEmp}</td>
+                    <td class="p-3.5 text-indigo-400 font-medium">${m.userName}</td>
+                    <td class="p-3.5 text-slate-400 text-[11px]">${m.reasonDoc}</td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function exportToCSV() {
+            if (db.movements.length === 0) {
+                showToast('Sem dados para exportar.', 'error');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Data/Hora,Tipo,Codigo Item,Descricao,Quantidade,Requisitante/Fornecedor,Usuario Responsavel,Motivo/Doc\n";
+
+            db.movements.forEach(m => {
+                const dt = new Date(m.timestamp).toLocaleString('pt-BR').replace(',', '');
+                csvContent += `"${dt}","${m.type}","${m.itemCode}","${m.itemDesc}","${m.qty}","${m.supplierOrEmp}","${m.userName}","${m.reasonDoc}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `relatorio_almoxarifado_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // AUXILIARY REGISTRIES (SUPPLIERS)
+        function renderSuppliersTable() {
+            const tbody = document.getElementById('suppliersTableBody');
+            tbody.innerHTML = db.suppliers.map(s => `
+                <tr class="hover:bg-slate-900/50 border-b border-slate-800/40">
+                    <td class="p-3.5 font-mono text-indigo-400">${s.cnpj}</td>
+                    <td class="p-3.5 font-medium text-slate-200">${s.name}</td>
+                    <td class="p-3.5 text-slate-300">${s.tradeName}</td>
+                    <td class="p-3.5 text-slate-400">${s.phone}</td>
+                    <td class="p-3.5 text-right">
+                        <button onclick="deleteSupplier('${s.id}')" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openSupplierModal() {
+            const content = `
+                <h3 class="text-base font-bold text-white mb-4">Novo Fornecedor</h3>
+                <form onsubmit="saveSupplier(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">CNPJ *</label>
+                        <input type="text" id="supCNPJ" required placeholder="00.000.000/0000-00" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Razão Social *</label>
+                        <input type="text" id="supName" required placeholder="Razão Social completa" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Nome Fantasia *</label>
+                        <input type="text" id="supTrade" required placeholder="Nome Fantasia" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Telefone / Contato</label>
+                        <input type="text" id="supPhone" placeholder="(00) 0000-0000" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                    </div>
+                    <button type="submit" class="w-full mt-2 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg">
+                        Cadastrar Fornecedor
+                    </button>
+                </form>
+            `;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('modalOverlay').classList.remove('hidden');
+        }
+
+        function saveSupplier(e) {
+            e.preventDefault();
+            const newSup = {
+                id: 'sup-' + Date.now(),
+                cnpj: document.getElementById('supCNPJ').value.trim(),
+                name: document.getElementById('supName').value.trim(),
+                tradeName: document.getElementById('supTrade').value.trim(),
+                phone: document.getElementById('supPhone').value.trim()
+            };
+            db.suppliers.push(newSup);
+            saveDatabase();
+            closeModal();
+            renderSuppliersTable();
+            showToast('Fornecedor cadastrado!', 'success');
+        }
+
+        function deleteSupplier(supId) {
+            if (confirm('Deseja excluir este fornecedor?')) {
+                db.suppliers = db.suppliers.filter(s => s.id !== supId);
+                saveDatabase();
+                renderSuppliersTable();
+            }
+        }
+
+        // AUXILIARY REGISTRIES (EMPLOYEES)
+        function renderEmployeesTable() {
+            const tbody = document.getElementById('employeesTableBody');
+            tbody.innerHTML = db.employees.map(e => `
+                <tr class="hover:bg-slate-900/50 border-b border-slate-800/40">
+                    <td class="p-3.5 font-mono text-indigo-400">${e.code}</td>
+                    <td class="p-3.5 font-medium text-slate-200">${e.name}</td>
+                    <td class="p-3.5 text-slate-300">${e.department}</td>
+                    <td class="p-3.5 text-slate-400">${e.role}</td>
+                    <td class="p-3.5 text-right">
+                        <button onclick="deleteEmployee('${e.id}')" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openEmployeeModal() {
+            const content = `
+                <h3 class="text-base font-bold text-white mb-4">Novo Funcionário Requisitante</h3>
+                <form onsubmit="saveEmployee(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Matrícula / Código *</label>
+                        <input type="text" id="empCode" required placeholder="ex: FUN-301" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Nome Completo *</label>
+                        <input type="text" id="empName" required placeholder="Nome do colaborador" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Setor / Departamento *</label>
+                        <input type="text" id="empDept" required placeholder="ex: Manutenção, Utilidades, TI" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cargo</label>
+                        <input type="text" id="empRole" placeholder="ex: Mecânico, Analista" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                    </div>
+                    <button type="submit" class="w-full mt-2 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg">
+                        Cadastrar Requisitante
+                    </button>
+                </form>
+            `;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('modalOverlay').classList.remove('hidden');
+        }
+
+        function saveEmployee(e) {
+            e.preventDefault();
+            const newEmp = {
+                id: 'emp-' + Date.now(),
+                code: document.getElementById('empCode').value.trim(),
+                name: document.getElementById('empName').value.trim(),
+                department: document.getElementById('empDept').value.trim(),
+                role: document.getElementById('empRole').value.trim()
+            };
+            db.employees.push(newEmp);
+            saveDatabase();
+            closeModal();
+            renderEmployeesTable();
+            showToast('Requisitante cadastrado!', 'success');
+        }
+
+        function deleteEmployee(empId) {
+            if (confirm('Deseja excluir este requisitante?')) {
+                db.employees = db.employees.filter(e => e.id !== empId);
+                saveDatabase();
+                renderEmployeesTable();
+            }
+        }
+
+        // USER MANAGEMENT
+        function renderUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = db.users.map(u => `
+                <tr class="hover:bg-slate-900/50 border-b border-slate-800/40">
+                    <td class="p-3.5 font-mono text-indigo-400 font-bold">${u.username}</td>
+                    <td class="p-3.5 font-medium text-slate-200">${u.name}</td>
+                    <td class="p-3.5">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] ${u.role === 'admin' ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'}">
+                            ${u.role === 'admin' ? 'Administrador' : 'Almoxarife / Operador'}
+                        </span>
+                    </td>
+                    <td class="p-3.5 text-right">
+                        ${u.username.toLowerCase() !== 'nicolas camilo' ? `
+                            <button onclick="deleteUser('${u.id}')" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        ` : '<span class="text-[10px] text-slate-500">Admin Principal</span>'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openUserModal() {
+            const content = `
+                <h3 class="text-base font-bold text-white mb-4">Novo Usuário do Sistema</h3>
+                <form onsubmit="saveUser(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Login / Usuário *</label>
+                        <input type="text" id="usrLogin" required placeholder="ex: operador2" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Nome Completo *</label>
+                        <input type="text" id="usrName" required placeholder="Nome do Operador" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Senha de Acesso *</label>
+                        <input type="password" id="usrPass" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Nível de Acesso *</label>
+                        <select id="usrRole" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                            <option value="operator">Almoxarife / Operador</option>
+                            <option value="admin">Administrador Geral</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full mt-2 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg">
+                        Cadastrar Operador
+                    </button>
+                </form>
+            `;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('modalOverlay').classList.remove('hidden');
+        }
+
+        function saveUser(e) {
+            e.preventDefault();
+            const newUser = {
+                id: 'usr-' + Date.now(),
+                username: document.getElementById('usrLogin').value.trim(),
+                name: document.getElementById('usrName').value.trim(),
+                password: document.getElementById('usrPass').value.trim(),
+                role: document.getElementById('usrRole').value
+            };
+            db.users.push(newUser);
+            saveDatabase();
+            closeModal();
+            renderUsersTable();
+            showToast('Usuário cadastrado com sucesso!', 'success');
+        }
+
+        function deleteUser(usrId) {
+            if (confirm('Deseja excluir este usuário?')) {
+                db.users = db.users.filter(u => u.id !== usrId);
+                saveDatabase();
+                renderUsersTable();
+            }
+        }
+
+        // CLOSE MODAL
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
