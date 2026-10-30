@@ -13,53 +13,33 @@
                 extend: {
                     colors: {
                         tech: {
-                            50: '#f0f4f8',
-                            100: '#d9e2ec',
-                            200: '#bcccdc',
-                            300: '#9fb3c8',
-                            400: '#829ab1',
-                            500: '#627d98',
-                            600: '#486581',
-                            700: '#334e68',
-                            800: '#243b53',
-                            900: '#102a43',
-                            950: '#0b1d3a'
+                            50: '#f0f4f8', 100: '#d9e2ec', 200: '#bcccdc', 300: '#9fb3c8',
+                            400: '#829ab1', 500: '#627d98', 600: '#486581', 700: '#334e68',
+                            800: '#243b53', 900: '#102a43', 950: '#0b1d3a'
                         }
                     },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif']
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
     </script>
-    <!-- Google Fonts & FontAwesome Icons -->
+    <!-- Google Fonts & FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            overflow-x: hidden;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #1e293b; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        .glass-panel { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
 
-    <!-- APP CONTAINER -->
     <div id="app" class="flex-1 flex flex-col min-h-screen">
 
         <!-- TELA DE LOGIN -->
@@ -105,7 +85,7 @@
         <!-- LAYOUT PRINCIPAL DO SISTEMA -->
         <div id="mainLayout" class="hidden flex-1 flex flex-col md:flex-row min-h-screen bg-slate-950">
             
-            <!-- MENU LATERAL (SIDEBAR) -->
+            <!-- MENU LATERAL -->
             <aside class="no-print hidden md:flex flex-col w-64 bg-slate-900/90 border-r border-slate-800/80 justify-between shrink-0">
                 <div>
                     <div class="h-16 flex items-center px-6 border-b border-slate-800/80 gap-3">
@@ -118,7 +98,6 @@
                         </div>
                     </div>
 
-                    <!-- NAVEGAÇÃO -->
                     <nav class="p-4 space-y-1.5 text-sm font-medium">
                         <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-indigo-400 bg-indigo-950/50 border border-indigo-800/30">
                             <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
@@ -138,7 +117,6 @@
                     </nav>
                 </div>
 
-                <!-- USUÁRIO LOGADO -->
                 <div class="p-4 border-t border-slate-800/80 bg-slate-950/40">
                     <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center gap-2.5 overflow-hidden">
@@ -157,7 +135,7 @@
                 </div>
             </aside>
 
-            <!-- CONTEÚDO DA PÁGINA -->
+            <!-- CONTEÚDO PRINCIPAL -->
             <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
                 <header class="no-print h-16 bg-slate-900/60 border-b border-slate-800/80 flex items-center justify-between px-4 md:px-8 shrink-0 backdrop-blur-md sticky top-0 z-30">
                     <div class="flex items-center gap-2 text-xs text-slate-400">
@@ -171,127 +149,164 @@
 
                 <main class="flex-1 p-4 md:p-8 space-y-6">
 
-                    <!-- SEÇÃO 1: DASHBOARD -->
+                    <!-- DASHBOARD -->
                     <section id="tab-dashboard" class="tab-content space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-white tracking-tight">Visão Geral do Almoxarifado</h2>
-                                <p class="text-xs text-slate-400">Indicadores em tempo real e atalhos operacionais rápidos.</p>
-                            </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white tracking-tight">Visão Geral do Almoxarifado</h2>
+                            <p class="text-xs text-slate-400">Indicadores e parâmetros em tempo real.</p>
                         </div>
 
-                        <!-- CARDS KPI -->
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                             <div class="glass-panel p-4 rounded-2xl border border-slate-800">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-medium text-slate-400">Total de Itens</span>
-                                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xs"><i class="fa-solid fa-cubes"></i></div>
-                                </div>
-                                <div class="text-2xl font-bold text-white">24</div>
-                                <p class="text-[10px] text-slate-500 mt-1">Produtos / Peças cadastradas</p>
+                                <span class="text-xs font-medium text-slate-400">Total de Peças</span>
+                                <div class="text-2xl font-bold text-white mt-1" id="dashTotalItems">0</div>
                             </div>
 
                             <div class="glass-panel p-4 rounded-2xl border border-slate-800">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-medium text-slate-400">Alertas Críticos</span>
-                                    <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center text-xs"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                                </div>
-                                <div class="text-2xl font-bold text-rose-400">2</div>
-                                <p class="text-[10px] text-slate-500 mt-1">Abaixo do estoque mínimo</p>
+                                <span class="text-xs font-medium text-slate-400">Valor Imobilizado</span>
+                                <div class="text-2xl font-bold text-emerald-400 mt-1" id="dashTotalValue">R$ 0,00</div>
                             </div>
 
                             <div class="glass-panel p-4 rounded-2xl border border-slate-800">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-medium text-slate-400">Valor Imobilizado</span>
-                                    <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-sack-dollar"></i></div>
-                                </div>
-                                <div class="text-xl sm:text-2xl font-bold text-emerald-400">R$ 14.250,00</div>
-                                <p class="text-[10px] text-slate-500 mt-1">Patrimônio total estocado</p>
+                                <span class="text-xs font-medium text-slate-400">Alertas de Estoque Crítico</span>
+                                <div class="text-2xl font-bold text-rose-400 mt-1" id="dashLowStock">0</div>
                             </div>
 
                             <div class="glass-panel p-4 rounded-2xl border border-slate-800">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-medium text-slate-400">Movimentações Hoje</span>
-                                    <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
-                                </div>
-                                <div class="text-2xl font-bold text-white">8</div>
-                                <p class="text-[10px] text-slate-500 mt-1">Entradas e saídas registradas</p>
+                                <span class="text-xs font-medium text-slate-400">Movimentações Registradas</span>
+                                <div class="text-2xl font-bold text-cyan-400 mt-1" id="dashTotalMoves">0</div>
                             </div>
                         </div>
                     </section>
 
-                    <!-- SEÇÃO 2: CADASTRO DE PEÇAS -->
+                    <!-- CADASTRO DE PEÇAS -->
                     <section id="tab-items" class="tab-content hidden space-y-6">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h2 class="text-xl font-bold text-white">Catálogo de Peças</h2>
-                                <p class="text-xs text-slate-400">Gerenciamento completo de itens e localizações.</p>
-                            </div>
-                            <button onclick="alert('Funcionalidade de cadastro rápido disponível.')" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow">
-                                <i class="fa-solid fa-plus mr-1"></i> Nova Peça
-                            </button>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Cadastro de Peças & Materiais</h2>
+                            <p class="text-xs text-slate-400">Adicione novas peças ao catálogo do almoxarifado.</p>
                         </div>
-                        <div class="glass-panel p-4 rounded-2xl border border-slate-800 text-slate-300 text-xs">
-                            <p>Nenhuma peça filtrada ou lista vazia no momento. Utilize o botão acima para adicionar.</p>
+
+                        <form onsubmit="handleNewItem(event)" class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-2xl space-y-4 text-xs">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-slate-300 font-semibold mb-1">Código Interno *</label>
+                                    <input type="text" id="itemCode" required placeholder="Ex: PEC-001" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-300 font-semibold mb-1">Descrição / Nome da Peça *</label>
+                                    <input type="text" id="itemName" required placeholder="Ex: Filtro de Óleo" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-slate-300 font-semibold mb-1">Estoque Inicial *</label>
+                                    <input type="number" id="itemStock" required value="0" min="0" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-300 font-semibold mb-1">Estoque Mínimo *</label>
+                                    <input type="number" id="itemMinStock" required value="5" min="0" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-300 font-semibold mb-1">Preço Unitário (R$) *</label>
+                                    <input type="number" step="0.01" id="itemPrice" required placeholder="0.00" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition cursor-pointer">
+                                Cadastrar Peça no Sistema
+                            </button>
+                        </form>
+
+                        <!-- TABELA DE PEÇAS CADASTRADAS -->
+                        <div class="glass-panel p-4 rounded-2xl border border-slate-800 overflow-x-auto space-y-3">
+                            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                                <h3 class="text-sm font-bold text-white">Lista de Peças Cadastradas</h3>
+                                <input type="text" id="searchItemInput" oninput="updateUI()" placeholder="Buscar por código ou descrição..." class="p-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full sm:w-64">
+                            </div>
+                            <table class="w-full text-left text-xs text-slate-300">
+                                <thead class="bg-slate-900 text-slate-400 uppercase text-[10px]">
+                                    <tr>
+                                        <th class="p-2">Código</th>
+                                        <th class="p-2">Peça</th>
+                                        <th class="p-2">Saldo Atual</th>
+                                        <th class="p-2">Estoque Mínimo</th>
+                                        <th class="p-2">Preço Unitário</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsTableBody" class="divide-y divide-slate-800">
+                                </tbody>
+                            </table>
                         </div>
                     </section>
 
-                    <!-- SEÇÃO 3: REGISTRAR ENTRADA -->
+                    <!-- REGISTRAR ENTRADA -->
                     <section id="tab-inflow" class="tab-content hidden space-y-6">
                         <div>
-                            <h2 class="text-xl font-bold text-white">Registrar Entrada de Materiais</h2>
-                            <p class="text-xs text-slate-400">Lançamento de notas fiscais e reposição de estoque.</p>
+                            <h2 class="text-xl font-bold text-white">Registrar Entrada no Estoque</h2>
+                            <p class="text-xs text-slate-400">Aumentar a quantidade de peças em estoque.</p>
                         </div>
-                        <div class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-2xl space-y-4 text-xs">
+
+                        <form onsubmit="handleInflow(event)" class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-2xl space-y-4 text-xs">
                             <div>
-                                <label class="block text-slate-300 font-semibold mb-1">Selecione a Peça</label>
-                                <select class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white">
-                                    <option>Selecione um item...</option>
-                                    <option>Correia Dentada - Motor</option>
-                                    <option>Óleo Lubrificante 15W40</option>
+                                <label class="block text-slate-300 font-semibold mb-1">Selecione a Peça *</label>
+                                <select id="inflowSelect" required class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-slate-300 font-semibold mb-1">Quantidade de Entrada</label>
-                                <input type="number" placeholder="Ex: 10" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white">
+                                <label class="block text-slate-300 font-semibold mb-1">Quantidade de Entrada *</label>
+                                <input type="number" id="inflowQty" required min="1" placeholder="Ex: 10" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             </div>
-                            <button onclick="alert('Entrada registrada com sucesso!')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition">
-                                Confirmar Entrada no Estoque
+                            <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition cursor-pointer">
+                                Confirmar Entrada
                             </button>
-                        </div>
+                        </form>
                     </section>
 
-                    <!-- SEÇÃO 4: DAR BAIXA (SAÍDA) -->
+                    <!-- DAR BAIXA (SAÍDA) -->
                     <section id="tab-outflow" class="tab-content hidden space-y-6">
                         <div>
-                            <h2 class="text-xl font-bold text-white">Dar Baixa (Saída de Materiais)</h2>
-                            <p class="text-xs text-slate-400">Retirada de peças para manutenção ou setores.</p>
+                            <h2 class="text-xl font-bold text-white">Dar Baixa (Saída de Estoque)</h2>
+                            <p class="text-xs text-slate-400">Registrar a retirada de peças do estoque.</p>
                         </div>
-                        <div class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-2xl space-y-4 text-xs">
+
+                        <form onsubmit="handleOutflow(event)" class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-2xl space-y-4 text-xs">
                             <div>
-                                <label class="block text-slate-300 font-semibold mb-1">Selecione a Peça</label>
-                                <select class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white">
-                                    <option>Selecione um item...</option>
-                                    <option>Correia Dentada - Motor</option>
-                                    <option>Óleo Lubrificante 15W40</option>
+                                <label class="block text-slate-300 font-semibold mb-1">Selecione a Peça *</label>
+                                <select id="outflowSelect" required class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-slate-300 font-semibold mb-1">Quantidade Retirada</label>
-                                <input type="number" placeholder="Ex: 2" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white">
+                                <label class="block text-slate-300 font-semibold mb-1">Quantidade Retirada *</label>
+                                <input type="number" id="outflowQty" required min="1" placeholder="Ex: 2" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             </div>
-                            <button onclick="alert('Baixa realizada com sucesso!')" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl transition">
-                                Confirmar Baixa (Saída)
+                            <button type="submit" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl transition cursor-pointer">
+                                Confirmar Baixa
                             </button>
-                        </div>
+                        </form>
                     </section>
 
-                    <!-- SEÇÃO 5: RELATÓRIOS -->
+                    <!-- RELATÓRIOS & AUDITORIA -->
                     <section id="tab-reports" class="tab-content hidden space-y-6">
-                        <h2 class="text-xl font-bold text-white">Relatórios & Auditoria</h2>
-                        <p class="text-xs text-slate-400">Histórico detalhado de movimentações do almoxarifado.</p>
-                        <div class="glass-panel p-4 rounded-2xl border border-slate-800 text-xs text-slate-300">
-                            <p>Nenhum relatório gerado hoje.</p>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Relatórios & Auditoria</h2>
+                            <p class="text-xs text-slate-400">Histórico de todas as movimentações e ações no sistema.</p>
+                        </div>
+
+                        <div class="glass-panel p-4 rounded-2xl border border-slate-800 overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-300">
+                                <thead class="bg-slate-900 text-slate-400 uppercase text-[10px]">
+                                    <tr>
+                                        <th class="p-2">Data / Hora</th>
+                                        <th class="p-2">Tipo</th>
+                                        <th class="p-2">Peça</th>
+                                        <th class="p-2">Quantidade</th>
+                                        <th class="p-2">Operador</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody" class="divide-y divide-slate-800">
+                                </tbody>
+                            </table>
                         </div>
                     </section>
 
@@ -300,12 +315,28 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE LÓGICA -->
+    <!-- SCRIPT DE LÓGICA DO SISTEMA -->
     <script>
         const usersDB = [
             { username: "nicolas camilo", name: "Nicolas Camilo", pass: "321", role: "Administrador", avatar: "NC" },
             { username: "gabriel caetano", name: "Gabriel Caetano", pass: "456", role: "Operador", avatar: "GC" }
         ];
+
+        let currentUser = null;
+
+        // Carrega peças do LocalStorage ou define dados iniciais
+        let partsData = JSON.parse(localStorage.getItem('supersonic_parts')) || [
+            { code: "PEC-001", name: "Filtro de Ar", stock: 12, minStock: 5, price: 45.00 },
+            { code: "PEC-002", name: "Óleo 15W40 (Litro)", stock: 3, minStock: 10, price: 32.50 }
+        ];
+
+        let historyLogs = JSON.parse(localStorage.getItem('supersonic_logs')) || [];
+
+        function saveParts() {
+            localStorage.setItem('supersonic_parts', JSON.stringify(partsData));
+            localStorage.setItem('supersonic_logs', JSON.stringify(historyLogs));
+            updateUI();
+        }
 
         function handleLogin(event) {
             event.preventDefault();
@@ -316,6 +347,7 @@
             const userFound = usersDB.find(u => u.username === userInput && u.pass === passInput);
 
             if (userFound) {
+                currentUser = userFound;
                 errorDiv.classList.add('hidden');
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('mainLayout').classList.remove('hidden');
@@ -323,6 +355,8 @@
                 document.getElementById('userNameDisplay').innerText = userFound.name;
                 document.getElementById('userRoleDisplay').innerText = userFound.role;
                 document.getElementById('userAvatar').innerText = userFound.avatar;
+
+                updateUI();
             } else {
                 errorDiv.classList.remove('hidden');
             }
@@ -332,16 +366,14 @@
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('mainLayout').classList.add('hidden');
             document.getElementById('loginPassword').value = '';
+            currentUser = null;
         }
 
         function switchTab(tabId) {
-            // Esconde todas as abas
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-            // Mostra a aba selecionada
             const selectedTab = document.getElementById('tab-' + tabId);
             if (selectedTab) selectedTab.classList.remove('hidden');
 
-            // Atualiza estilo dos botões do menu lateral
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('text-indigo-400', 'bg-indigo-950/50', 'border', 'border-indigo-800/30');
                 btn.classList.add('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/50');
@@ -351,6 +383,125 @@
                 activeBtn.classList.remove('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/50');
                 activeBtn.classList.add('text-indigo-400', 'bg-indigo-950/50', 'border', 'border-indigo-800/30');
             }
+        }
+
+        // CADASTRO DE PEÇA
+        function handleNewItem(event) {
+            event.preventDefault();
+            const code = document.getElementById('itemCode').value.trim();
+            const name = document.getElementById('itemName').value.trim();
+            const stock = parseFloat(document.getElementById('itemStock').value);
+            const minStock = parseFloat(document.getElementById('itemMinStock').value);
+            const price = parseFloat(document.getElementById('itemPrice').value);
+
+            partsData.push({ code, name, stock, minStock, price });
+            addLog("Cadastro", `${code} - ${name}`, stock);
+            saveParts();
+
+            alert('Peça cadastrada com sucesso!');
+            event.target.reset();
+        }
+
+        // ENTRADA NO ESTOQUE
+        function handleInflow(event) {
+            event.preventDefault();
+            const index = document.getElementById('inflowSelect').value;
+            const qty = parseFloat(document.getElementById('inflowQty').value);
+
+            if (index !== "" && !isNaN(qty)) {
+                partsData[index].stock += qty;
+                addLog("Entrada", partsData[index].name, qty);
+                saveParts();
+                alert('Entrada registrada com sucesso!');
+                event.target.reset();
+            }
+        }
+
+        // BAIXA NO ESTOQUE
+        function handleOutflow(event) {
+            event.preventDefault();
+            const index = document.getElementById('outflowSelect').value;
+            const qty = parseFloat(document.getElementById('outflowQty').value);
+
+            if (index !== "" && !isNaN(qty)) {
+                if (partsData[index].stock >= qty) {
+                    partsData[index].stock -= qty;
+                    addLog("Saída", partsData[index].name, qty);
+                    saveParts();
+                    alert('Baixa registrada com sucesso!');
+                    event.target.reset();
+                } else {
+                    alert('Quantidade indisponível em estoque!');
+                }
+            }
+        }
+
+        function addLog(type, itemInfo, qty) {
+            const now = new Date();
+            historyLogs.unshift({
+                date: now.toLocaleString('pt-BR'),
+                type: type,
+                item: itemInfo,
+                qty: qty,
+                user: currentUser ? currentUser.name : 'Sistema'
+            });
+        }
+
+        // ATUALIZA PAINEL E TABELAS
+        function updateUI() {
+            // Dashboard
+            document.getElementById('dashTotalItems').innerText = partsData.length;
+            
+            const totalValue = partsData.reduce((sum, item) => sum + (item.stock * item.price), 0);
+            document.getElementById('dashTotalValue').innerText = 'R$ ' + totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+            const lowStockCount = partsData.filter(item => item.stock <= item.minStock).length;
+            document.getElementById('dashLowStock').innerText = lowStockCount;
+            document.getElementById('dashTotalMoves').innerText = historyLogs.length;
+
+            // Tabela com busca
+            const filterText = (document.getElementById('searchItemInput')?.value || '').toLowerCase();
+            const tbody = document.getElementById('itemsTableBody');
+            tbody.innerHTML = '';
+            
+            const inflowSelect = document.getElementById('inflowSelect');
+            const outflowSelect = document.getElementById('outflowSelect');
+            
+            inflowSelect.innerHTML = '<option value="">Selecione uma peça...</option>';
+            outflowSelect.innerHTML = '<option value="">Selecione uma peça...</option>';
+
+            partsData.forEach((item, idx) => {
+                if (item.code.toLowerCase().includes(filterText) || item.name.toLowerCase().includes(filterText)) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-2 font-mono font-bold">${item.code}</td>
+                        <td class="p-2">${item.name}</td>
+                        <td class="p-2 ${item.stock <= item.minStock ? 'text-rose-400 font-bold' : ''}">${item.stock}</td>
+                        <td class="p-2">${item.minStock}</td>
+                        <td class="p-2">R$ ${item.price.toFixed(2)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+
+                inflowSelect.innerHTML += `<option value="${idx}">${item.code} - ${item.name} (Saldo: ${item.stock})</option>`;
+                outflowSelect.innerHTML += `<option value="${idx}">${item.code} - ${item.name} (Saldo: ${item.stock})</option>`;
+            });
+
+            // Tabela de Histórico
+            const histBody = document.getElementById('historyTableBody');
+            histBody.innerHTML = '';
+            historyLogs.forEach(log => {
+                const tr = document.createElement('tr');
+                const badgeColor = log.type === 'Entrada' ? 'text-emerald-400' : (log.type === 'Saída' ? 'text-rose-400' : 'text-indigo-400');
+                tr.innerHTML = `
+                    <td class="p-2">${log.date}</td>
+                    <td class="p-2 font-bold ${badgeColor}">${log.type}</td>
+                    <td class="p-2">${log.item}</td>
+                    <td class="p-2">${log.qty}</td>
+                    <td class="p-2">${log.user}</td>
+                `;
+                histBody.appendChild(tr);
+            });
         }
     </script>
 </body>
