@@ -117,5 +117,105 @@
                         Usuário ou senha incorretos!
                     </div>
 
-                    <!-- BOTAO ENTRAR -->
-                    <button type="submit" class="w-full py-3 px-4 bg-gradient-to
+                    <!-- BOTÃO CONTINUAR / ACESSAR SISTEMA -->
+                    <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-semibold text-sm rounded-xl shadow-lg shadow-indigo-600/25 transition duration-200 active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer">
+                        <span>Acessar Sistema</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- MAIN LAYOUT -->
+        <div id="mainLayout" class="hidden flex-1 flex flex-col md:flex-row min-h-screen bg-slate-950">
+            <aside class="no-print hidden md:flex flex-col w-64 bg-slate-900/90 border-r border-slate-800/80 justify-between shrink-0">
+                <div>
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800/80 gap-3">
+                        <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-600 text-white shadow-md shadow-indigo-500/20">
+                            <i class="fa-solid fa-boxes-stacked text-base"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-100 tracking-wide text-xs uppercase">SUPERSONIC</div>
+                            <div class="text-[10px] text-indigo-400 font-medium tracking-widest uppercase">Campinas</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-slate-800/80 bg-slate-950/40">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2.5 overflow-hidden">
+                            <div class="w-8 h-8 rounded-full bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-indigo-300 font-bold text-xs shrink-0" id="userAvatar">
+                                NC
+                            </div>
+                            <div class="truncate">
+                                <div class="text-xs font-semibold text-slate-200 truncate" id="userNameDisplay">Nicolas Camilo</div>
+                                <div class="text-[10px] text-indigo-400 font-medium capitalize" id="userRoleDisplay">Administrador</div>
+                            </div>
+                        </div>
+                        <button onclick="handleLogout()" title="Sair do Sistema" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+                <header class="no-print h-16 bg-slate-900/60 border-b border-slate-800/80 flex items-center justify-between px-4 md:px-8 shrink-0 backdrop-blur-md sticky top-0 z-30">
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <i class="fa-solid fa-server text-emerald-400 text-xs"></i>
+                        <span>Almoxarifado SUPERSONIC: <strong class="text-slate-200 font-mono">ONLINE</strong></span>
+                    </div>
+                    <button onclick="handleLogout()" class="md:hidden text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-rose-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-right-from-bracket"></i> Sair
+                    </button>
+                </header>
+
+                <main class="flex-1 p-4 md:p-8 space-y-6">
+                    <section id="tab-dashboard" class="tab-content space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-white tracking-tight">Visão Geral do Almoxarifado</h2>
+                                <p class="text-xs text-slate-400">Sistema ativo e operacional.</p>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE AUTENTICAÇÃO E LÓGICA -->
+    <script>
+        const usersDB = [
+            { username: "nicolas camilo", name: "Nicolas Camilo", pass: "321", role: "Administrador", avatar: "NC" },
+            { username: "gabriel caetano", name: "Gabriel Caetano", pass: "456", role: "Operador", avatar: "GC" }
+        ];
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const userInput = document.getElementById('loginUsername').value.trim().toLowerCase();
+            const passInput = document.getElementById('loginPassword').value.trim();
+            const errorDiv = document.getElementById('loginError');
+
+            const userFound = usersDB.find(u => u.username === userInput && u.pass === passInput);
+
+            if (userFound) {
+                errorDiv.classList.add('hidden');
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainLayout').classList.remove('hidden');
+                
+                document.getElementById('userNameDisplay').innerText = userFound.name;
+                document.getElementById('userRoleDisplay').innerText = userFound.role;
+                document.getElementById('userAvatar').innerText = userFound.avatar;
+            } else {
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainLayout').classList.add('hidden');
+            document.getElementById('loginPassword').value = '';
+        }
+    </script>
+</body>
+</html>
