@@ -24,13 +24,6 @@
                             800: '#243b53',
                             900: '#102a43',
                             950: '#0b1d3a'
-                        },
-                        accent: {
-                            blue: '#3b82f6',
-                            cyan: '#06b6d4',
-                            emerald: '#10b981',
-                            rose: '#f43f5e',
-                            amber: '#f59e0b'
                         }
                     },
                     fontFamily: {
@@ -53,20 +46,10 @@
             color: #f8fafc;
             overflow-x: hidden;
         }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
         .glass-panel {
             background: rgba(30, 41, 59, 0.85);
             backdrop-filter: blur(12px);
@@ -79,12 +62,9 @@
     <!-- APP CONTAINER -->
     <div id="app" class="flex-1 flex flex-col min-h-screen">
 
-        <!-- LOGIN SCREEN -->
+        <!-- TELA DE LOGIN -->
         <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
             <div class="w-full max-w-md p-8 glass-panel rounded-2xl shadow-2xl relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
                 <div class="text-center mb-8">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 mb-3 shadow-lg shadow-indigo-500/30">
                         <i class="fa-solid fa-boxes-stacked text-2xl text-white"></i>
@@ -94,7 +74,6 @@
                 </div>
 
                 <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
-                    <!-- CAMPO USUARIO -->
                     <div>
                         <label class="block text-xs font-semibold uppercase text-slate-300 mb-1.5">Usuário</label>
                         <div class="relative">
@@ -103,7 +82,6 @@
                         </div>
                     </div>
 
-                    <!-- CAMPO SENHA -->
                     <div>
                         <label class="block text-xs font-semibold uppercase text-slate-300 mb-1.5">Senha</label>
                         <div class="relative">
@@ -112,12 +90,10 @@
                         </div>
                     </div>
 
-                    <!-- MENSAGEM DE ERRO -->
                     <div id="loginError" class="hidden text-xs text-rose-400 text-center font-medium bg-rose-500/10 py-2 rounded-lg border border-rose-500/20">
                         Usuário ou senha incorretos!
                     </div>
 
-                    <!-- BOTÃO CONTINUAR / ACESSAR SISTEMA -->
                     <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-semibold text-sm rounded-xl shadow-lg shadow-indigo-600/25 transition duration-200 active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer">
                         <span>Acessar Sistema</span>
                         <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -126,8 +102,10 @@
             </div>
         </div>
 
-        <!-- MAIN LAYOUT -->
+        <!-- LAYOUT PRINCIPAL DO SISTEMA -->
         <div id="mainLayout" class="hidden flex-1 flex flex-col md:flex-row min-h-screen bg-slate-950">
+            
+            <!-- MENU LATERAL (SIDEBAR) -->
             <aside class="no-print hidden md:flex flex-col w-64 bg-slate-900/90 border-r border-slate-800/80 justify-between shrink-0">
                 <div>
                     <div class="h-16 flex items-center px-6 border-b border-slate-800/80 gap-3">
@@ -139,7 +117,28 @@
                             <div class="text-[10px] text-indigo-400 font-medium tracking-widest uppercase">Campinas</div>
                         </div>
                     </div>
+
+                    <!-- NAVEGAÇÃO -->
+                    <nav class="p-4 space-y-1.5 text-sm font-medium">
+                        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-indigo-400 bg-indigo-950/50 border border-indigo-800/30">
+                            <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+                        </button>
+                        <button onclick="switchTab('items')" id="nav-items" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                            <i class="fa-solid fa-box-archive w-5 text-center"></i> Cadastro de Peças
+                        </button>
+                        <button onclick="switchTab('inflow')" id="nav-inflow" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                            <i class="fa-solid fa-circle-arrow-down w-5 text-center text-emerald-400"></i> Registrar Entrada
+                        </button>
+                        <button onclick="switchTab('outflow')" id="nav-outflow" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                            <i class="fa-solid fa-circle-arrow-up w-5 text-center text-rose-400"></i> Dar Baixa (Saída)
+                        </button>
+                        <button onclick="switchTab('reports')" id="nav-reports" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                            <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i> Relatórios & Auditoria
+                        </button>
+                    </nav>
                 </div>
+
+                <!-- USUÁRIO LOGADO -->
                 <div class="p-4 border-t border-slate-800/80 bg-slate-950/40">
                     <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center gap-2.5 overflow-hidden">
@@ -158,11 +157,12 @@
                 </div>
             </aside>
 
+            <!-- CONTEÚDO DA PÁGINA -->
             <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
                 <header class="no-print h-16 bg-slate-900/60 border-b border-slate-800/80 flex items-center justify-between px-4 md:px-8 shrink-0 backdrop-blur-md sticky top-0 z-30">
                     <div class="flex items-center gap-2 text-xs text-slate-400">
                         <i class="fa-solid fa-server text-emerald-400 text-xs"></i>
-                        <span>Almoxarifado SUPERSONIC: <strong class="text-slate-200 font-mono">ONLINE</strong></span>
+                        <span>Servidor Almoxarifado Campinas: <strong class="text-slate-200 font-mono">ONLINE</strong></span>
                     </div>
                     <button onclick="handleLogout()" class="md:hidden text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-rose-400 flex items-center gap-1.5">
                         <i class="fa-solid fa-right-from-bracket"></i> Sair
@@ -170,20 +170,137 @@
                 </header>
 
                 <main class="flex-1 p-4 md:p-8 space-y-6">
+
+                    <!-- SEÇÃO 1: DASHBOARD -->
                     <section id="tab-dashboard" class="tab-content space-y-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
                                 <h2 class="text-xl font-bold text-white tracking-tight">Visão Geral do Almoxarifado</h2>
-                                <p class="text-xs text-slate-400">Sistema ativo e operacional.</p>
+                                <p class="text-xs text-slate-400">Indicadores em tempo real e atalhos operacionais rápidos.</p>
+                            </div>
+                        </div>
+
+                        <!-- CARDS KPI -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="glass-panel p-4 rounded-2xl border border-slate-800">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-medium text-slate-400">Total de Itens</span>
+                                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xs"><i class="fa-solid fa-cubes"></i></div>
+                                </div>
+                                <div class="text-2xl font-bold text-white">24</div>
+                                <p class="text-[10px] text-slate-500 mt-1">Produtos / Peças cadastradas</p>
+                            </div>
+
+                            <div class="glass-panel p-4 rounded-2xl border border-slate-800">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-medium text-slate-400">Alertas Críticos</span>
+                                    <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center text-xs"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                </div>
+                                <div class="text-2xl font-bold text-rose-400">2</div>
+                                <p class="text-[10px] text-slate-500 mt-1">Abaixo do estoque mínimo</p>
+                            </div>
+
+                            <div class="glass-panel p-4 rounded-2xl border border-slate-800">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-medium text-slate-400">Valor Imobilizado</span>
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-sack-dollar"></i></div>
+                                </div>
+                                <div class="text-xl sm:text-2xl font-bold text-emerald-400">R$ 14.250,00</div>
+                                <p class="text-[10px] text-slate-500 mt-1">Patrimônio total estocado</p>
+                            </div>
+
+                            <div class="glass-panel p-4 rounded-2xl border border-slate-800">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-medium text-slate-400">Movimentações Hoje</span>
+                                    <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+                                </div>
+                                <div class="text-2xl font-bold text-white">8</div>
+                                <p class="text-[10px] text-slate-500 mt-1">Entradas e saídas registradas</p>
                             </div>
                         </div>
                     </section>
+
+                    <!-- SEÇÃO 2: CADASTRO DE PEÇAS -->
+                    <section id="tab-items" class="tab-content hidden space-y-6">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Catálogo de Peças</h2>
+                                <p class="text-xs text-slate-400">Gerenciamento completo de itens e localizações.</p>
+                            </div>
+                            <button onclick="alert('Funcionalidade de cadastro rápido disponível.')" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow">
+                                <i class="fa-solid fa-plus mr-1"></i> Nova Peça
+                            </button>
+                        </div>
+                        <div class="glass-panel p-4 rounded-2xl border border-slate-800 text-slate-300 text-xs">
+                            <p>Nenhuma peça filtrada ou lista vazia no momento. Utilize o botão acima para adicionar.</p>
+                        </div>
+                    </section>
+
+                    <!-- SEÇÃO 3: REGISTRAR ENTRADA -->
+                    <section id="tab-inflow" class="tab-content hidden space-y-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Registrar Entrada de Materiais</h2>
+                            <p class="text-xs text-slate-400">Lançamento de notas fiscais e reposição de estoque.</p>
+                        </div>
+                        <div class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-2xl space-y-4 text-xs">
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">Selecione a Peça</label>
+                                <select class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white">
+                                    <option>Selecione um item...</option>
+                                    <option>Correia Dentada - Motor</option>
+                                    <option>Óleo Lubrificante 15W40</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">Quantidade de Entrada</label>
+                                <input type="number" placeholder="Ex: 10" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white">
+                            </div>
+                            <button onclick="alert('Entrada registrada com sucesso!')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition">
+                                Confirmar Entrada no Estoque
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- SEÇÃO 4: DAR BAIXA (SAÍDA) -->
+                    <section id="tab-outflow" class="tab-content hidden space-y-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Dar Baixa (Saída de Materiais)</h2>
+                            <p class="text-xs text-slate-400">Retirada de peças para manutenção ou setores.</p>
+                        </div>
+                        <div class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-2xl space-y-4 text-xs">
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">Selecione a Peça</label>
+                                <select class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white">
+                                    <option>Selecione um item...</option>
+                                    <option>Correia Dentada - Motor</option>
+                                    <option>Óleo Lubrificante 15W40</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">Quantidade Retirada</label>
+                                <input type="number" placeholder="Ex: 2" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white">
+                            </div>
+                            <button onclick="alert('Baixa realizada com sucesso!')" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl transition">
+                                Confirmar Baixa (Saída)
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- SEÇÃO 5: RELATÓRIOS -->
+                    <section id="tab-reports" class="tab-content hidden space-y-6">
+                        <h2 class="text-xl font-bold text-white">Relatórios & Auditoria</h2>
+                        <p class="text-xs text-slate-400">Histórico detalhado de movimentações do almoxarifado.</p>
+                        <div class="glass-panel p-4 rounded-2xl border border-slate-800 text-xs text-slate-300">
+                            <p>Nenhum relatório gerado hoje.</p>
+                        </div>
+                    </section>
+
                 </main>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT DE AUTENTICAÇÃO E LÓGICA -->
+    <!-- SCRIPT DE LÓGICA -->
     <script>
         const usersDB = [
             { username: "nicolas camilo", name: "Nicolas Camilo", pass: "321", role: "Administrador", avatar: "NC" },
@@ -215,6 +332,25 @@
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('mainLayout').classList.add('hidden');
             document.getElementById('loginPassword').value = '';
+        }
+
+        function switchTab(tabId) {
+            // Esconde todas as abas
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            // Mostra a aba selecionada
+            const selectedTab = document.getElementById('tab-' + tabId);
+            if (selectedTab) selectedTab.classList.remove('hidden');
+
+            // Atualiza estilo dos botões do menu lateral
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-indigo-400', 'bg-indigo-950/50', 'border', 'border-indigo-800/30');
+                btn.classList.add('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/50');
+            });
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/50');
+                activeBtn.classList.add('text-indigo-400', 'bg-indigo-950/50', 'border', 'border-indigo-800/30');
+            }
         }
     </script>
 </body>
