@@ -114,6 +114,9 @@
                         <button onclick="switchTab('reports')" id="nav-reports" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
                             <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i> Relatórios & Auditoria
                         </button>
+                        <button onclick="switchTab('users')" id="nav-users" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                            <i class="fa-solid fa-users-gear w-5 text-center"></i> Operadores / Usuários
+                        </button>
                     </nav>
                 </div>
 
@@ -183,7 +186,7 @@
                     <section id="tab-items" class="tab-content hidden space-y-6">
                         <div>
                             <h2 class="text-xl font-bold text-white">Cadastro de Peças & Materiais</h2>
-                            <p class="text-xs text-slate-400">Adicione novas peças ao catálogo do almoxarifado.</p>
+                            <p class="text-xs text-slate-400">Adicione novas peças ou gerencie os itens existentes no catálogo.</p>
                         </div>
 
                         <form onsubmit="handleNewItem(event)" class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-2xl space-y-4 text-xs">
@@ -218,7 +221,7 @@
                             </button>
                         </form>
 
-                        <!-- TABELA DE PEÇAS CADASTRADAS -->
+                        <!-- TABELA DE PEÇAS CADASTRADAS COM AÇÕES -->
                         <div class="glass-panel p-4 rounded-2xl border border-slate-800 overflow-x-auto space-y-3">
                             <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                                 <h3 class="text-sm font-bold text-white">Lista de Peças Cadastradas</h3>
@@ -232,6 +235,7 @@
                                         <th class="p-2">Saldo Atual</th>
                                         <th class="p-2">Estoque Mínimo</th>
                                         <th class="p-2">Preço Unitário</th>
+                                        <th class="p-2 text-center">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="itemsTableBody" class="divide-y divide-slate-800">
@@ -294,215 +298,4 @@
                         </div>
 
                         <div class="glass-panel p-4 rounded-2xl border border-slate-800 overflow-x-auto">
-                            <table class="w-full text-left text-xs text-slate-300">
-                                <thead class="bg-slate-900 text-slate-400 uppercase text-[10px]">
-                                    <tr>
-                                        <th class="p-2">Data / Hora</th>
-                                        <th class="p-2">Tipo</th>
-                                        <th class="p-2">Peça</th>
-                                        <th class="p-2">Quantidade</th>
-                                        <th class="p-2">Operador</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="historyTableBody" class="divide-y divide-slate-800">
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-
-                </main>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPT DE LÓGICA DO SISTEMA -->
-    <script>
-        const usersDB = [
-            { username: "nicolas camilo", name: "Nicolas Camilo", pass: "321", role: "Administrador", avatar: "NC" },
-            { username: "gabriel caetano", name: "Gabriel Caetano", pass: "456", role: "Operador", avatar: "GC" }
-        ];
-
-        let currentUser = null;
-
-        // Carrega peças do LocalStorage ou define dados iniciais
-        let partsData = JSON.parse(localStorage.getItem('supersonic_parts')) || [
-            { code: "PEC-001", name: "Filtro de Ar", stock: 12, minStock: 5, price: 45.00 },
-            { code: "PEC-002", name: "Óleo 15W40 (Litro)", stock: 3, minStock: 10, price: 32.50 }
-        ];
-
-        let historyLogs = JSON.parse(localStorage.getItem('supersonic_logs')) || [];
-
-        function saveParts() {
-            localStorage.setItem('supersonic_parts', JSON.stringify(partsData));
-            localStorage.setItem('supersonic_logs', JSON.stringify(historyLogs));
-            updateUI();
-        }
-
-        function handleLogin(event) {
-            event.preventDefault();
-            const userInput = document.getElementById('loginUsername').value.trim().toLowerCase();
-            const passInput = document.getElementById('loginPassword').value.trim();
-            const errorDiv = document.getElementById('loginError');
-
-            const userFound = usersDB.find(u => u.username === userInput && u.pass === passInput);
-
-            if (userFound) {
-                currentUser = userFound;
-                errorDiv.classList.add('hidden');
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('mainLayout').classList.remove('hidden');
-                
-                document.getElementById('userNameDisplay').innerText = userFound.name;
-                document.getElementById('userRoleDisplay').innerText = userFound.role;
-                document.getElementById('userAvatar').innerText = userFound.avatar;
-
-                updateUI();
-            } else {
-                errorDiv.classList.remove('hidden');
-            }
-        }
-
-        function handleLogout() {
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('mainLayout').classList.add('hidden');
-            document.getElementById('loginPassword').value = '';
-            currentUser = null;
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-            const selectedTab = document.getElementById('tab-' + tabId);
-            if (selectedTab) selectedTab.classList.remove('hidden');
-
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-indigo-400', 'bg-indigo-950/50', 'border', 'border-indigo-800/30');
-                btn.classList.add('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/50');
-            });
-            const activeBtn = document.getElementById('nav-' + tabId);
-            if (activeBtn) {
-                activeBtn.classList.remove('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/50');
-                activeBtn.classList.add('text-indigo-400', 'bg-indigo-950/50', 'border', 'border-indigo-800/30');
-            }
-        }
-
-        // CADASTRO DE PEÇA
-        function handleNewItem(event) {
-            event.preventDefault();
-            const code = document.getElementById('itemCode').value.trim();
-            const name = document.getElementById('itemName').value.trim();
-            const stock = parseFloat(document.getElementById('itemStock').value);
-            const minStock = parseFloat(document.getElementById('itemMinStock').value);
-            const price = parseFloat(document.getElementById('itemPrice').value);
-
-            partsData.push({ code, name, stock, minStock, price });
-            addLog("Cadastro", `${code} - ${name}`, stock);
-            saveParts();
-
-            alert('Peça cadastrada com sucesso!');
-            event.target.reset();
-        }
-
-        // ENTRADA NO ESTOQUE
-        function handleInflow(event) {
-            event.preventDefault();
-            const index = document.getElementById('inflowSelect').value;
-            const qty = parseFloat(document.getElementById('inflowQty').value);
-
-            if (index !== "" && !isNaN(qty)) {
-                partsData[index].stock += qty;
-                addLog("Entrada", partsData[index].name, qty);
-                saveParts();
-                alert('Entrada registrada com sucesso!');
-                event.target.reset();
-            }
-        }
-
-        // BAIXA NO ESTOQUE
-        function handleOutflow(event) {
-            event.preventDefault();
-            const index = document.getElementById('outflowSelect').value;
-            const qty = parseFloat(document.getElementById('outflowQty').value);
-
-            if (index !== "" && !isNaN(qty)) {
-                if (partsData[index].stock >= qty) {
-                    partsData[index].stock -= qty;
-                    addLog("Saída", partsData[index].name, qty);
-                    saveParts();
-                    alert('Baixa registrada com sucesso!');
-                    event.target.reset();
-                } else {
-                    alert('Quantidade indisponível em estoque!');
-                }
-            }
-        }
-
-        function addLog(type, itemInfo, qty) {
-            const now = new Date();
-            historyLogs.unshift({
-                date: now.toLocaleString('pt-BR'),
-                type: type,
-                item: itemInfo,
-                qty: qty,
-                user: currentUser ? currentUser.name : 'Sistema'
-            });
-        }
-
-        // ATUALIZA PAINEL E TABELAS
-        function updateUI() {
-            // Dashboard
-            document.getElementById('dashTotalItems').innerText = partsData.length;
-            
-            const totalValue = partsData.reduce((sum, item) => sum + (item.stock * item.price), 0);
-            document.getElementById('dashTotalValue').innerText = 'R$ ' + totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-
-            const lowStockCount = partsData.filter(item => item.stock <= item.minStock).length;
-            document.getElementById('dashLowStock').innerText = lowStockCount;
-            document.getElementById('dashTotalMoves').innerText = historyLogs.length;
-
-            // Tabela com busca
-            const filterText = (document.getElementById('searchItemInput')?.value || '').toLowerCase();
-            const tbody = document.getElementById('itemsTableBody');
-            tbody.innerHTML = '';
-            
-            const inflowSelect = document.getElementById('inflowSelect');
-            const outflowSelect = document.getElementById('outflowSelect');
-            
-            inflowSelect.innerHTML = '<option value="">Selecione uma peça...</option>';
-            outflowSelect.innerHTML = '<option value="">Selecione uma peça...</option>';
-
-            partsData.forEach((item, idx) => {
-                if (item.code.toLowerCase().includes(filterText) || item.name.toLowerCase().includes(filterText)) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="p-2 font-mono font-bold">${item.code}</td>
-                        <td class="p-2">${item.name}</td>
-                        <td class="p-2 ${item.stock <= item.minStock ? 'text-rose-400 font-bold' : ''}">${item.stock}</td>
-                        <td class="p-2">${item.minStock}</td>
-                        <td class="p-2">R$ ${item.price.toFixed(2)}</td>
-                    `;
-                    tbody.appendChild(tr);
-                }
-
-                inflowSelect.innerHTML += `<option value="${idx}">${item.code} - ${item.name} (Saldo: ${item.stock})</option>`;
-                outflowSelect.innerHTML += `<option value="${idx}">${item.code} - ${item.name} (Saldo: ${item.stock})</option>`;
-            });
-
-            // Tabela de Histórico
-            const histBody = document.getElementById('historyTableBody');
-            histBody.innerHTML = '';
-            historyLogs.forEach(log => {
-                const tr = document.createElement('tr');
-                const badgeColor = log.type === 'Entrada' ? 'text-emerald-400' : (log.type === 'Saída' ? 'text-rose-400' : 'text-indigo-400');
-                tr.innerHTML = `
-                    <td class="p-2">${log.date}</td>
-                    <td class="p-2 font-bold ${badgeColor}">${log.type}</td>
-                    <td class="p-2">${log.item}</td>
-                    <td class="p-2">${log.qty}</td>
-                    <td class="p-2">${log.user}</td>
-                `;
-                histBody.appendChild(tr);
-            });
-        }
-    </script>
-</body>
-</html>
+                            <table class="w
